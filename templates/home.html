@@ -5,35 +5,25 @@
 </head>
 <body>
     <h1>Test!</h1>
-    <hr>
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-            <p>{{ message }}</p>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
-    </hr>
-    <form method="POST" action="/">
+    <form method="POST" action="">
+        {% for message in get_flashed_messages() %}
+            <div class="alert-error">{{ message }}</div>
+        {% endfor %}
         {{ form.hidden_tag() }}
-        <div class="form-field">{{ form.link.label }} {{ form.link(size=20) }}</div>
-            {% if form.link.errors %}
-            <ul class="errors">
-                {% for error in form.link.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
-        <div class="form-field">{{ form.token.label }} {{ form.token }}</div>
-            {% if form.token.errors %}
-            <ul class="errors">
-                {% for error in form.token.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-            {% endif %}
+        {% for field in form if (field.widget.input_type != 'hidden' and field.name != "submit") %}
+            <tr>
+                <td>{{ field.label }}</td>
+                <td>{{ field }}</td></br>
+                <ul class="errors">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </tr>
+        {% endfor %}
         {{ form.submit }}
     </form>
+    
 <!-- Thi Javascript snippet makes resubmission window not pop up - hacky, but works -->
     <script>
         if ( window.history.replaceState ) {
