@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Easton Potokar</title>
+</head>
+<body>
+    <h1>Test!</h1>
+    <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </hr>
+    <form method="POST" action="/">
+        {{ form.hidden_tag() }}
+        <div class="form-field">{{ form.link.label }} {{ form.link(size=20) }}</div>
+            {% if form.link.errors %}
+            <ul class="errors">
+                {% for error in form.link.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        <div class="form-field">{{ form.token.label }} {{ form.token }}</div>
+            {% if form.token.errors %}
+            <ul class="errors">
+                {% for error in form.token.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        {{ form.submit }}
+    </form>
+<!-- Thi Javascript snippet makes resubmission window not pop up - hacky, but works -->
+    <script>
+        if ( window.history.replaceState ) {
+          window.history.replaceState( null, null, window.location.href );
+        }
+    </script>
+</body>
+</html>
