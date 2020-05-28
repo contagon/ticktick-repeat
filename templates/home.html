@@ -6,11 +6,28 @@
 <body>
     <h1>Test!</h1>
     <form method="POST" action="">
+        <!-- Any Error Messages -->
         {% for message in get_flashed_messages() %}
             <div class="alert-error">{{ message }}</div>
         {% endfor %}
-        {{ form.hidden_tag() }}
-        {% for field in form if (field.widget.input_type != 'hidden' and field.name != "submit") %}
+        {{ connect.hidden_tag() }}
+        <!-- Connect Form -->
+        <tr>
+            <td>{{ connect.url.label }}</td>
+            <td>{{ connect.url }}</td></br>
+            <ul class="errors">
+                {% for error in connect.url.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </tr>
+        <tr>
+            <td>{{ connect.token.label }}</td>
+            <td>{{ connect.token }}</td></br>
+            </ul>
+        </tr>
+        <!-- Recur Form -->
+        {% for field in recur %}
             <tr>
                 <td>{{ field.label }}</td>
                 <td>{{ field }}</td></br>
@@ -21,7 +38,20 @@
                 </ul>
             </tr>
         {% endfor %}
-        {{ form.submit }}
+        <!-- Notion Form -->
+        {% for field in columns if field.widget.input_type != 'hidden' %}
+            <tr>
+                <td>{{ field.label }}</td>
+                <td>{{ field }}</td></br>
+                <ul class="errors">
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </tr>
+        {% endfor %}
+
+        {{ connect.submit }}
     </form>
     
 <!-- Thi Javascript snippet makes resubmission window not pop up - hacky, but works -->
