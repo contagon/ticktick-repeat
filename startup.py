@@ -23,11 +23,16 @@ class ConnectionForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class RecurType(FlaskForm):
-    types = SelectField('Select Recurring Type', choices=["Date with End Date", "Date with Number", "Number"], default="Dates")
-    days = RadioField('Select Days', choices=["M", "W", "T"])
-    start = DateField("Start Date")
-    end = DateField("End Date")
-    number = IntegerField("Count")
+    types = SelectField('Select Recurring Type', choices=[("dates_both", "Start and End Date"),
+                                                        ("dates_mix", "Start Date and Number"),
+                                                        ("number", "Number")], default="dates_both")
+    start_date = DateField("Start Date")
+    end_date = DateField("End Date")
+    count = IntegerField("Count")
+
+days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
+for day in days:
+    setattr(RecurType, day, BooleanField(day))
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -37,7 +42,7 @@ app.config.from_object(Config)
 ##################################################
 def connect_notion(url, token):
     if token == "":
-        token = "blank"
+        token = os.environ.get('BOT_TOKEN')
     client = NotionClient(token_v2=token)
     view = client.get_collection_view(url)
     return view.collection
@@ -121,7 +126,6 @@ def home():
             #empty slots we don't want to reuse
             for field in columns:
                 if field.name not in ["url", "token", "connected"]:# and field.widget.input_type != 'hidden':
-                    print(field.name)
                     field.data = ""
 
             return render_template('home.html', connect=connect, recur=recur, columns=columns)
