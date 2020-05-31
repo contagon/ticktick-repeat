@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, StringField, BooleanField, \
         SelectField, FileField, HiddenField, SelectMultipleField, RadioField
 from wtforms.fields.html5 import IntegerField, DateField, TimeField, URLField, DecimalField, EmailField, TelField
-from wtforms.validators import DataRequired, URL
+from wtforms.validators import DataRequired, URL, NumberRange, Email
 from notion.client import NotionClient
 
 from datetime import datetime, timedelta
@@ -28,9 +28,9 @@ class RecurType(FlaskForm):
     types = SelectField('Select Recurring Type', choices=[("dates_both", "Start and End Date"),
                                                         ("dates_mix", "Start Date and Number"),
                                                         ("number", "Number")], default="dates_both")
-    start_date = DateField("Start Date")
-    end_date = DateField("End Date")
-    count = IntegerField("Count")
+    start_date = DateField("Start Date", default=datetime.now())
+    end_date = DateField("End Date", default=datetime.now()+timedelta(days=1))
+    count = IntegerField("Count", default=1, validators=[NumberRange(min=1)])
 
 days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 for day in days:
@@ -57,7 +57,7 @@ def make_columns(schema):
         if column['type'] == 'title' or column['type'] == 'text':
             fields[ column['slug'] ] = StringField(column['name'], validators=[])
         elif column['type'] == 'email':
-            fields[ column['slug'] ] = EmailField(column['name'], validators=[])
+            fields[ column['slug'] ] = EmailField(column['name'], validators=[Email()])
         elif column['type'] == 'date':
             fields[ column['slug'] ] = DateField(column['name'], validators=[])
             dates.append((column['slug'], column['name']))
@@ -70,8 +70,8 @@ def make_columns(schema):
         elif column['type'] == 'phone_number':
             fields[ column['slug'] ] = TelField(column['name'], validators=[])
         elif column['type'] == 'select':
-            options = [i['value'] for i in column['options']]
-            fields[ column['slug'] ] = SelectField(column['name'], validators=[], choices=options)
+            options = [("", "")] + [(i['value'], i['value']) for i in column['options']]
+            fields[ column['slug'] ] = SelectField(column['name'], validators=[], choices=options, default=options[0][0])
         elif column['type'] == 'number':
             fields[ column['slug'] ] = DecimalField(column['name'], validators=[])
         elif column['type'] == 'checkbox':
@@ -142,8 +142,7 @@ def home():
 #################################################
 
 def add_notion(collection, params, recur):
-    #parse through param and recur data
-    params.pop('csrf_token')
+    #parse through recur data
     start_date = recur["start_date"]
     end_date = recur["end_date"]
     count = recur["count"]
@@ -165,6 +164,9 @@ def add_notion(collection, params, recur):
     if recur["Sun"]:
         days.append(6)
 
+    #clean out params given
+    params.pop('csrf_token')
+
     # Set up iterative variables
     if types in ["dates_both", "dates_mix"]:
         params[date_options] = start_date
@@ -173,7 +175,6 @@ def add_notion(collection, params, recur):
 
     still_going = True
     while still_going:
-        print(count, ccount)
         #if that's not a day we're supposed to add, skip (and check if we should stop)
         if types in ["dates_both", "dates_mix"] and params[date_options].weekday() not in days:
             params[date_options] += timedelta(days=1)
