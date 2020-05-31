@@ -183,9 +183,7 @@ def add_notion(collection, params, recur):
             continue
 
         #add it
-        new = collection.add_row()
-        for k, v in params.items():
-            setattr(new, k, v)
+        collection.add_row(**params)
 
         #increment date and count (and check if we should stop)
         if types in ["dates_both", "dates_mix"]:
