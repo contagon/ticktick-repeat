@@ -6,6 +6,8 @@ from wtforms.fields.html5 import IntegerField, DateField, TimeField, URLField, D
 from wtforms.validators import DataRequired, URL
 from notion.client import NotionClient
 
+from datetime import datetime, timedelta
+
 import os
 
 # connect.connected.data = False
@@ -49,6 +51,7 @@ def connect_notion(url, token):
 
 def make_columns(schema):
     #Put all columns into  a field
+    dates = []
     fields = dict()
     for column in schema:
         if column['type'] == 'title' or column['type'] == 'text':
@@ -57,6 +60,7 @@ def make_columns(schema):
             fields[ column['slug'] ] = EmailField(column['name'], validators=[])
         elif column['type'] == 'date':
             fields[ column['slug'] ] = DateField(column['name'], validators=[])
+            dates.append((column['slug'], column['name']))
         elif column['type'] == 'url':
             fields[ column['slug'] ] = URLField(column['name'], validators=[])
         # elif column['type'] == 'person':
@@ -86,7 +90,10 @@ def make_columns(schema):
     for k, v in fields.items():
         setattr(NotionColumns, k, v)
 
-    return NotionColumns()
+    if dates == []:
+        dates.append("NO DATES TO RECUR ON")
+    Recur = type("RecurFull", (RecurType,), {"date_options": SelectField("Date to Recur", choices=dates)})
+    return NotionColumns(), Recur()
 
 ##################################################
 ########              PAGES               ########
@@ -94,7 +101,6 @@ def make_columns(schema):
 @app.route("/", methods=['GET', 'POST'])
 def home():
     connect = ConnectionForm()
-    recur = RecurType()
 
     #****************** CONNECTION FORM ******************
     if connect.validate_on_submit() and connect.connected.data == "False":
@@ -109,7 +115,7 @@ def home():
             return render_template('home.html', connect=connect)
 
         #if we connected properly, give them notion connect
-        columns = make_columns(collection.get_schema_properties())
+        columns, recur = make_columns(collection.get_schema_properties())
         return render_template('home.html', connect=connect, recur=recur, columns=columns)
 
 
@@ -117,16 +123,11 @@ def home():
     if connect.connected.data == "True":
         #pull columns out of notion to make notion connect
         collection = connect_notion(connect.url.data, connect.token.data)
-        columns = make_columns(collection.get_schema_properties())
+        columns, recur = make_columns(collection.get_schema_properties())
 
         if connect.validate_on_submit(): 
-            ##TODO:  push it to notion!
-            flash(f"INSERTED: {columns.data}")
-
-            #empty slots we don't want to reuse
-            for field in columns:
-                if field.name not in ["url", "token", "connected"]:# and field.widget.input_type != 'hidden':
-                    field.data = ""
+            #push it to notion!
+            add_notion(collection, columns.data, recur.data)
 
             return render_template('home.html', connect=connect, recur=recur, columns=columns)
 
@@ -136,5 +137,67 @@ def home():
     connect.connected.data = False
     return render_template('home.html', connect=connect)
 
+#################################################
+########        ADDING TO NOTION         ########
+#################################################
+
+def add_notion(collection, params, recur):
+    #parse through param and recur data
+    params.pop('csrf_token')
+    start_date = recur["start_date"]
+    end_date = recur["end_date"]
+    count = recur["count"]
+    types = recur["types"]
+    date_options = recur["date_options"]
+    days = []
+    if recur["M"]:
+        days.append(0)
+    if recur["Tu"]:
+        days.append(1)
+    if recur["W"]:
+        days.append(2)
+    if recur["Th"]:
+        days.append(3)
+    if recur["F"]:
+        days.append(4)
+    if recur["Sat"]:
+        days.append(5)
+    if recur["Sun"]:
+        days.append(6)
+
+    # Set up iterative variables
+    if types in ["dates_both", "dates_mix"]:
+        params[date_options] = start_date
+    if types in ["dates_mix", "number"]:
+        ccount = 0
+
+    still_going = True
+    while still_going:
+        print(count, ccount)
+        #if that's not a day we're supposed to add, skip (and check if we should stop)
+        if types in ["dates_both", "dates_mix"] and params[date_options].weekday() not in days:
+            params[date_options] += timedelta(days=1)
+            if types == "dates_both" and params[date_options] > end_date:
+                still_going = False
+            continue
+
+        #add it
+        new = collection.add_row()
+        for k, v in params.items():
+            setattr(new, k, v)
+
+        #increment date and count (and check if we should stop)
+        if types in ["dates_both", "dates_mix"]:
+            params[date_options] += timedelta(days=1)
+        if types == "dates_both" and params[date_options] > end_date:
+            still_going = False
+        if types in ["dates_mix", "number"]:
+            ccount += 1
+            if ccount >= count:
+                still_going = False
+
 if __name__ == '__main__':
     app.run(debug=True)
+
+
+        

@@ -6,6 +6,7 @@
     <script>
         window.onload = function() {
             recur_options();
+            date_visibility();
         };
     </script>
 {% endif %}
@@ -15,34 +16,31 @@
         {% for message in get_flashed_messages() %}
             <div class="alert-error">{{ message }}</div>
         {% endfor %}
+
         <!-- Connect Form -->
-        <!-- <tr>
-            <td>{{ connect.url.label }}</td>
-            <td>{{ connect.url }}</td></br>
-            <ul class="errors">
-                {% for error in connect.url.errors %}
-                    <li>{{ error }}</li>
-                {% endfor %}
-            </ul>
-        </tr>
-        <tr>
-            <td>{{ connect.token.label }}</td>
-            <td>{{ connect.token }}</td></br>
-            </ul>
-        </tr> -->
         <h4>Repeat Notion</h4>
         <h5>Connect to Notion</h5>
         {{ connect.hidden_tag() }}
         {{ connect.url.label }}
         {{ connect.url(class="u-full-width") }}
+        <ul class="errors">
+            {% for error in connect.url.errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
         {{ connect.token.label }}
         {{ connect.token(class="u-full-width") }}
+        
         <!-- Recur Form -->
         {% if recur %}
             <h5>Recurring Settings</h5>
             {{ recur.types.label }}
             {{ recur.types(class="u-full-width", onchange="recur_options()") }}
-            <div class="grid-container halves" id="recur_settings">
+            <div class="grid-container thirds" id="recur_settings">
+                <div id="{{ recur.date_options.name }}_div">
+                    {{ recur.date_options.label }}
+                    {{ recur.date_options(class="u-full-width", onchange="date_visibility()") }}
+                </div>
                 <div id="{{ recur.start_date.name }}">
                     {{ recur.start_date.label }}
                     {{ recur.start_date(class="u-full-width") }}
@@ -85,8 +83,10 @@
         <!-- Notion Form -->
         {% if columns %}
             {% for field in columns if field.widget.input_type != 'hidden' %}
+            <div id={{field.name}}>
                 {{ field.label }}
                 {{ field(class="u-full-width") }}
+            </div>
             {% endfor %}
         {% endif %}
 
