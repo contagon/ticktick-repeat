@@ -47,9 +47,9 @@ def connect_notion(url, token):
         token = os.environ.get('BOT_TOKEN')
     client = NotionClient(token_v2=token)
     view = client.get_collection_view(url)
-    return view.collection
+    return client, view.collection
 
-def make_columns(schema):
+def make_columns(client, schema):
     #Put all columns into  a field
     dates = []
     fields = dict()
@@ -63,8 +63,10 @@ def make_columns(schema):
             dates.append((column['slug'], column['name']))
         elif column['type'] == 'url':
             fields[ column['slug'] ] = URLField(column['name'], validators=[])
-        # elif column['type'] == 'person':
-        #     fields[ column['slug'] ] = BooleanField(column['name'], validators=[])
+        elif column['type'] == 'person':
+            persons = client.current_space.users
+            options = [(i.id, i.full_name) for i in persons]
+            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
         elif column['type'] == 'text':
             fields[ column['slug'] ] = StringField(column['name'], validators=[])
         elif column['type'] == 'phone_number':
@@ -81,8 +83,11 @@ def make_columns(schema):
             fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
         # elif column['type'] == 'file':
         #     fields[ column['slug'] ] = FileField(column['name'], validators=[])
-        # elif column['type'] == 'relation':
-        #     fields[ column['slug'] ] = BooleanField(column['name'], validators=[])
+        elif column['type'] == 'relation':
+            relation = client.get_collection(column['collection_id'])
+            rows = relation.get_rows()
+            options = [(i.id, i.title) for i in rows]
+            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
 
     class NotionColumns(FlaskForm):
         pass
@@ -106,7 +111,7 @@ def home():
     if connect.validate_on_submit() and connect.connected.data == "False":
         #see if what they gave us works
         try:
-            collection = connect_notion(connect.url.data, connect.token.data)
+            client, collection = connect_notion(connect.url.data, connect.token.data)
             connect.connected.data = "True"
 
         except Exception as e:
@@ -115,15 +120,15 @@ def home():
             return render_template('home.html', connect=connect)
 
         #if we connected properly, give them notion connect
-        columns, recur = make_columns(collection.get_schema_properties())
+        columns, recur = make_columns(client, collection.get_schema_properties())
         return render_template('home.html', connect=connect, recur=recur, columns=columns)
 
 
     #******************* NOTION FORM *******************
     if connect.connected.data == "True":
         #pull columns out of notion to make notion connect
-        collection = connect_notion(connect.url.data, connect.token.data)
-        columns, recur = make_columns(collection.get_schema_properties())
+        client, collection = connect_notion(connect.url.data, connect.token.data)
+        columns, recur = make_columns(client, collection.get_schema_properties())
 
         if connect.validate_on_submit(): 
             #push it to notion!
