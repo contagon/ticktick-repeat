@@ -25,9 +25,9 @@ class ConnectionForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class RecurType(FlaskForm):
-    start_date = DateField("Start Date", default=datetime.now(), validators=[])
-    end_date = DateField("End Date", default=datetime.now()+timedelta(days=1), validators=[])
-    count = IntegerField("Count", default=1, validators=[NumberRange(min=1)])
+    start_date = DateField("Start Date", validators=[])
+    end_date = DateField("End Date", validators=[])
+    count = IntegerField("Count", validators=[NumberRange(min=1)])
 
     def validate(self):
         super().validate()
