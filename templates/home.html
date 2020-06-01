@@ -48,6 +48,11 @@
                 <div id="{{ recur.end_date.name }}">
                     {{ recur.end_date.label }}
                     {{ recur.end_date(class="u-full-width") }}
+                    <ul class="errors">
+                        {% for error in recur.end_date.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
                 </div>
                 <div id="{{ recur.count.name }}">
                     {{ recur.count.label }}
@@ -78,6 +83,11 @@
                   </tr>
                 </tbody>
             </table>
+            <ul class="errors">
+                {% for error in recur.M.errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
         {% endif %}
         
         <!-- Notion Form -->

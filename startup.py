@@ -25,12 +25,20 @@ class ConnectionForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class RecurType(FlaskForm):
-    types = SelectField('Select Recurring Type', choices=[("dates_both", "Start and End Date"),
-                                                        ("dates_mix", "Start Date and Number"),
-                                                        ("number", "Number")], default="dates_both")
-    start_date = DateField("Start Date", default=datetime.now())
-    end_date = DateField("End Date", default=datetime.now()+timedelta(days=1))
+    start_date = DateField("Start Date", default=datetime.now(), validators=[])
+    end_date = DateField("End Date", default=datetime.now()+timedelta(days=1), validators=[])
     count = IntegerField("Count", default=1, validators=[NumberRange(min=1)])
+
+    def validate(self):
+        super().validate()
+        #make sure our start and end dates are good
+        if self.types.data == "dates_both" and self.start_date.data >= self.end_date.data:
+            self.end_date.errors.append("End Date is before or on Starting Date")
+        
+        #make sure they choose at least one day when it's required
+        days = [self.M, self.Tu, self.W, self.Th, self.F, self.Sat, self.Sun]
+        if self.types.data != "number" and not any([i.data for i in days]):
+            self.M.errors.append("You must choose a day!")
 
 days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 for day in days:
@@ -62,7 +70,7 @@ def make_columns(client, schema):
             fields[ column['slug'] ] = DateField(column['name'], validators=[])
             dates.append((column['slug'], column['name']))
         elif column['type'] == 'url':
-            fields[ column['slug'] ] = URLField(column['name'], validators=[])
+            fields[ column['slug'] ] = URLField(column['name'], validators=[URL()])
         elif column['type'] == 'person':
             persons = client.current_space.users
             options = [(i.id, i.full_name) for i in persons]
@@ -89,15 +97,20 @@ def make_columns(client, schema):
             options = [(i.id, i.title) for i in rows]
             fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
 
-    class NotionColumns(FlaskForm):
-        pass
-    #apply all attributes of our temporary connect
-    for k, v in fields.items():
-        setattr(NotionColumns, k, v)
+    #apply all attributes of our temporary form
+    NotionColumns = type("NotionColumns", (FlaskForm,), fields)
 
+    #fill out the rest of our recurring form
+    #includes what types to iterate over, and if there's any of them at all
+    recur_params = {"date_options": SelectField("Date to Recur", choices=dates)}
     if dates == []:
-        dates.append("NO DATES TO RECUR ON")
-    Recur = type("RecurFull", (RecurType,), {"date_options": SelectField("Date to Recur", choices=dates)})
+        recur_params['types'] = SelectField('Select Recurring Type', choices=[("number", "Number")], default="number")
+    else:
+        recur_params['types'] = SelectField('Select Recurring Type', choices=[("dates_both", "Start and End Date"),
+                                                        ("dates_mix", "Start Date and Number"),
+                                                        ("number", "Number")], default="dates_both")
+    Recur = type("RecurFull", (RecurType,), recur_params)
+    
     return NotionColumns(), Recur()
 
 ##################################################
@@ -130,7 +143,7 @@ def home():
         client, collection = connect_notion(connect.url.data, connect.token.data)
         columns, recur = make_columns(client, collection.get_schema_properties())
 
-        if connect.validate_on_submit(): 
+        if connect.validate_on_submit() and recur.validate_on_submit(): 
             #push it to notion!
             add_notion(collection, columns.data, recur.data)
 
