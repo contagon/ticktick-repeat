@@ -25,12 +25,20 @@ class ConnectionForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class RecurType(FlaskForm):
-    types = SelectField('Select Recurring Type', choices=[("dates_both", "Start and End Date"),
-                                                        ("dates_mix", "Start Date and Number"),
-                                                        ("number", "Number")], default="dates_both")
-    start_date = DateField("Start Date", default=datetime.now())
-    end_date = DateField("End Date", default=datetime.now()+timedelta(days=1))
-    count = IntegerField("Count", default=1, validators=[NumberRange(min=1)])
+    start_date = DateField("Start Date", validators=[])
+    end_date = DateField("End Date", validators=[])
+    count = IntegerField("Count", validators=[NumberRange(min=1)])
+
+    def validate(self):
+        super().validate()
+        #make sure our start and end dates are good
+        if self.types.data == "dates_both" and self.start_date.data >= self.end_date.data:
+            self.end_date.errors.append("End Date is before or on Starting Date")
+        
+        #make sure they choose at least one day when it's required
+        days = [self.M, self.Tu, self.W, self.Th, self.F, self.Sat, self.Sun]
+        if self.types.data != "number" and not any([i.data for i in days]):
+            self.M.errors.append("You must choose a day!")
 
 days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 for day in days:
@@ -47,9 +55,9 @@ def connect_notion(url, token):
         token = os.environ.get('BOT_TOKEN')
     client = NotionClient(token_v2=token)
     view = client.get_collection_view(url)
-    return view.collection
+    return client, view.collection
 
-def make_columns(schema):
+def make_columns(client, schema):
     #Put all columns into  a field
     dates = []
     fields = dict()
@@ -62,9 +70,11 @@ def make_columns(schema):
             fields[ column['slug'] ] = DateField(column['name'], validators=[])
             dates.append((column['slug'], column['name']))
         elif column['type'] == 'url':
-            fields[ column['slug'] ] = URLField(column['name'], validators=[])
-        # elif column['type'] == 'person':
-        #     fields[ column['slug'] ] = BooleanField(column['name'], validators=[])
+            fields[ column['slug'] ] = URLField(column['name'], validators=[URL()])
+        elif column['type'] == 'person':
+            persons = client.current_space.users
+            options = [(i.id, i.full_name) for i in persons]
+            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
         elif column['type'] == 'text':
             fields[ column['slug'] ] = StringField(column['name'], validators=[])
         elif column['type'] == 'phone_number':
@@ -81,18 +91,26 @@ def make_columns(schema):
             fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
         # elif column['type'] == 'file':
         #     fields[ column['slug'] ] = FileField(column['name'], validators=[])
-        # elif column['type'] == 'relation':
-        #     fields[ column['slug'] ] = BooleanField(column['name'], validators=[])
+        elif column['type'] == 'relation':
+            relation = client.get_collection(column['collection_id'])
+            rows = relation.get_rows()
+            options = [(i.id, i.title) for i in rows]
+            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
 
-    class NotionColumns(FlaskForm):
-        pass
-    #apply all attributes of our temporary connect
-    for k, v in fields.items():
-        setattr(NotionColumns, k, v)
+    #apply all attributes of our temporary form
+    NotionColumns = type("NotionColumns", (FlaskForm,), fields)
 
+    #fill out the rest of our recurring form
+    #includes what types to iterate over, and if there's any of them at all
+    recur_params = {"date_options": SelectField("Date to Recur", choices=dates)}
     if dates == []:
-        dates.append("NO DATES TO RECUR ON")
-    Recur = type("RecurFull", (RecurType,), {"date_options": SelectField("Date to Recur", choices=dates)})
+        recur_params['types'] = SelectField('Select Recurring Type', choices=[("number", "Number")], default="number")
+    else:
+        recur_params['types'] = SelectField('Select Recurring Type', choices=[("dates_both", "Start and End Date"),
+                                                        ("dates_mix", "Start Date and Number"),
+                                                        ("number", "Number")], default="dates_both")
+    Recur = type("RecurFull", (RecurType,), recur_params)
+    
     return NotionColumns(), Recur()
 
 ##################################################
@@ -106,7 +124,7 @@ def home():
     if connect.validate_on_submit() and connect.connected.data == "False":
         #see if what they gave us works
         try:
-            collection = connect_notion(connect.url.data, connect.token.data)
+            client, collection = connect_notion(connect.url.data, connect.token.data)
             connect.connected.data = "True"
 
         except Exception as e:
@@ -115,17 +133,17 @@ def home():
             return render_template('home.html', connect=connect)
 
         #if we connected properly, give them notion connect
-        columns, recur = make_columns(collection.get_schema_properties())
+        columns, recur = make_columns(client, collection.get_schema_properties())
         return render_template('home.html', connect=connect, recur=recur, columns=columns)
 
 
     #******************* NOTION FORM *******************
     if connect.connected.data == "True":
         #pull columns out of notion to make notion connect
-        collection = connect_notion(connect.url.data, connect.token.data)
-        columns, recur = make_columns(collection.get_schema_properties())
+        client, collection = connect_notion(connect.url.data, connect.token.data)
+        columns, recur = make_columns(client, collection.get_schema_properties())
 
-        if connect.validate_on_submit(): 
+        if connect.validate_on_submit() and recur.validate_on_submit(): 
             #push it to notion!
             add_notion(collection, columns.data, recur.data)
 
