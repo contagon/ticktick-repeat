@@ -20,8 +20,8 @@ class Config():
 
 class ConnectionForm(FlaskForm):
     connected = HiddenField("Connected")
-    url = StringField('URL', validators=[DataRequired(), URL()], render_kw={"placeholder": "URL to Notion Database"})
-    token = StringField('v2 Token', render_kw={"placeholder": "Notion v2 Token"})
+    url = StringField('URL to Notion Database', validators=[DataRequired(), URL()])
+    token = StringField('Notion v2 Token')
     submit = SubmitField('Submit')
 
 class RecurType(FlaskForm):
@@ -63,39 +63,39 @@ def make_columns(client, schema):
     fields = dict()
     for column in schema:
         if column['type'] == 'title' or column['type'] == 'text':
-            fields[ column['slug'] ] = StringField(column['name'], validators=[])
+            fields[ column['slug'] ] = StringField(column['name'], validators=[], id=column['type'])
         elif column['type'] == 'email':
-            fields[ column['slug'] ] = EmailField(column['name'], validators=[Email()])
+            fields[ column['slug'] ] = EmailField(column['name'], validators=[Email()], id=column['type'])
         elif column['type'] == 'date':
-            fields[ column['slug'] ] = DateField(column['name'], validators=[])
+            fields[ column['slug'] ] = DateField(column['name'], validators=[], id=column['type'])
             dates.append((column['slug'], column['name']))
         elif column['type'] == 'url':
-            fields[ column['slug'] ] = URLField(column['name'], validators=[URL()])
+            fields[ column['slug'] ] = URLField(column['name'], validators=[URL()], id=column['type'])
         elif column['type'] == 'person':
             persons = client.current_space.users
             options = [(i.id, i.full_name) for i in persons]
-            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
+            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options, id=column['type'])
         elif column['type'] == 'text':
-            fields[ column['slug'] ] = StringField(column['name'], validators=[])
+            fields[ column['slug'] ] = StringField(column['name'], validators=[], id=column['type'])
         elif column['type'] == 'phone_number':
-            fields[ column['slug'] ] = TelField(column['name'], validators=[])
+            fields[ column['slug'] ] = TelField(column['name'], validators=[], id=column['type'])
         elif column['type'] == 'select':
             options = [("", "")] + [(i['value'], i['value']) for i in column['options']]
-            fields[ column['slug'] ] = SelectField(column['name'], validators=[], choices=options, default=options[0][0])
+            fields[ column['slug'] ] = SelectField(column['name'], validators=[], choices=options, default=options[0][0], id=column['type'])
         elif column['type'] == 'number':
-            fields[ column['slug'] ] = DecimalField(column['name'], validators=[])
+            fields[ column['slug'] ] = DecimalField(column['name'], validators=[], id=column['type'])
         elif column['type'] == 'checkbox':
-            fields[ column['slug'] ] = BooleanField(column['name'], validators=[])
+            fields[ column['slug'] ] = BooleanField(column['name'], validators=[], id=column['type'])
         elif column['type'] == 'multi_select':
             options = [(i['value'], i['value']) for i in column['options']]
-            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
+            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options, id=column['type'])
         # elif column['type'] == 'file':
         #     fields[ column['slug'] ] = FileField(column['name'], validators=[])
         elif column['type'] == 'relation':
             relation = client.get_collection(column['collection_id'])
             rows = relation.get_rows()
             options = [(i.id, i.title) for i in rows]
-            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options)
+            fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options, id=column['type'])
 
     #apply all attributes of our temporary form
     NotionColumns = type("NotionColumns", (FlaskForm,), fields)

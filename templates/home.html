@@ -23,7 +23,7 @@
         <div class="field">
             <div class="control">
                 {{ connect.hidden_tag() }}
-                {{ connect.url(class="input") }}
+                {{ connect.url(class="input", placeholder=connect.url.label.text) }}
             </div>
         </div>
         <ul class="errors">
@@ -33,8 +33,7 @@
         </ul>
         <div class="field">
             <div class="control">
-                {{ connect.hidden_tag() }}
-                {{ connect.token(class="input") }}
+                {{ connect.token(class="input", placeholder=connect.token.label.text) }}
             </div>
         </div>
         
@@ -95,22 +94,107 @@
                   </tr>
                 </tbody>
             </table>
-        {% endif %}
+        {% endif %} -->
         
 
         {% if columns %}
             {% for field in columns if field.widget.input_type != 'hidden' %}
-            <div id="field {{field.name}}">
-                <div class="control">
-                    {{ field.label }}
-                    {{ field(class="u-full-width input") }}
-                </div>
-            </div>
+                {% if field.id == "email" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-at"></span> 
+                            </span>
+                        </div>
+                    </div>
+                {% elif field.id == "text" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-format-align-left"></span> 
+                            </span>
+                        </div>
+                    </div>
+                {% elif field.id == "url" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-link-variant"></span>
+                            </span>
+                        </div>
+                <   /div> 
+                {% elif field.id == "phone" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-phone"></span> 
+                            </span>
+                        </div>
+                    </div>
+                {% elif field.id == "select" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>   
+                            </span>
+                        </div>
+                </  div>                    
+                {% elif field.id == "title" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-format-font"></span>   
+                            </span>
+                        </div>
+                </  div>                    
+                {% elif field.id == "multi_select" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-format-list-bulleted"></span>   
+                            </span>
+                        </div>
+                </  div>                    
+                {% elif field.id == "person" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-account-group"></span>  
+                            </span>
+                        </div>
+                </  div>                     
+                {% elif field.id == "number" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-pound"></span>
+                            </span>
+                        </div>
+                    </div>
+                {% elif field.id == "date" %}
+                    <div id="field">
+                        <div class="control has-icons-left">
+                            {{ field(class="input", placeholder=field.label.text) }}
+                            <span class="icon is-left">
+                                <span class="mdi mdi-24px mdi-calendar-text"></span>
+                            </span>
+                        </div>
+                    </div>
+                {% endif %}
             {% endfor %}
         {% endif %}
         <div class="field">
-            <div class="control">
-                {{ connect.submit(class="button") }} 
+                <div class="control">
+                  {{ connect.submit(class="button") }} 
             </div>
         </div>
     </form>
