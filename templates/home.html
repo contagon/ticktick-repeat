@@ -5,13 +5,15 @@
 {% if recur %}
     <script>
         window.onload = function() {
-            // recur_options();
-            // date_visibility();
+            recur_options();
+            date_visibility();
         };
     </script>
 {% endif %}
-<section class="section">
+<section class="section is-vertical-center">
+    <div class="container">
     <form method="POST" action="">
+        <!-- Connect Form -->
         {% if not recur %}
             <div class="box">
         {% else %}
@@ -19,7 +21,6 @@
         {% endif %}
                 <h1 class="title">Repeat Notion</h1>
                 <h2 class="subtitle">Connect to Notion</h2>
-                <!-- Connect Form -->
                 <div class="field">
                     <div class="control">
                         {{ connect.hidden_tag() }}
@@ -34,7 +35,7 @@
                         {{ connect.token(class="input", placeholder=connect.token.label.text) }}
                     </div>
                     <div class="control">
-                        {{ connect.submit(class="button") }} 
+                        {{ connect.submit(class="button is-primary") }} 
                     </div>
                 </div>
             </div>
@@ -44,27 +45,42 @@
         {% if recur %}
             <div class="box">
                 <h1 class="title">Recurring Settings</h1>
-                <div class="field">
-                    {{ recur.types.label }}
-                    <div class="control is-expanded">
-                        <div class="select is-fullwidth">
-                            {{ recur.types(onchange="recur_options()") }}
-                        </div>
-                    </div>
-                </div>
-                <div class="columns is-mobile">
-                    <div class="column" id="{{ recur.date_options.name }}_div">
+                <h2 class="subtitle">Choose how to iteratively add things</h2>
+                <div class="columns is-mobile" style="margin-bottom: -0.75rem;">
+                    <div class="column">
                         <div class="field">
-                            {{ recur.date_options.label }}
+                            {{ recur.types.label }}
                             <div class="control is-expanded">
                                 <div class="select is-fullwidth">
-                                    <!-- {{ recur.date_options(onchange="date_visibility()") }} -->
-                                    {{ recur.date_options() }}
+                                    {{ recur.types(onchange="recur_options()") }}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="column" id="{{ recur.start_date.name }}">
+                    <div class="column is-narrow" id="{{ recur.date_options.name }}_div">
+                        <div class="field">
+                            {{ recur.date_options.label }}
+                            <div class="control is-expanded">
+                                <div class="select is-fullwidth">
+                                    {{ recur.date_options(onchange="date_visibility()") }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="columns is-mobile" style="margin-bottom: -0.75rem;">
+                    <div class="column" id="recur_days">
+                        <div class="field">
+                            {{ recur.days.label }}
+                            <div class="control">
+                                {{ recur.days(class="input") }}
+                            </div>
+                            {% for error in recur.days.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="column is-narrow" id="{{ recur.start_date.name }}">
                         <div class="field">
                             {{ recur.start_date.label }}
                             <div class="control">
@@ -75,7 +91,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="column" id="{{ recur.end_date.name }}">
+                    <div class="column is-narrow" id="{{ recur.end_date.name }}">
                         <div class="field">
                             {{ recur.end_date.label }}
                             <div class="control">
@@ -98,155 +114,201 @@
                         </div>
                     </div>
                 </div>
-                <table class="u-full-width" id="recur_days">
-                    <thead>
-                        <tr>
-                            <th>{{ recur.Sun.label }}</th>
-                            <th>{{ recur.M.label }}</th>
-                            <th>{{ recur.Tu.label }}</th>
-                            <th>{{ recur.W.label }}</th>
-                            <th>{{ recur.Th.label }}</th>
-                            <th>{{ recur.F.label }}</th>
-                            <th>{{ recur.Sat.label }}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>{{ recur.Sun }}</th>
-                            <th>{{ recur.M }}</th>
-                            <th>{{ recur.Tu }}</th>
-                            <th>{{ recur.W }}</th>
-                            <th>{{ recur.Th }}</th>
-                            <th>{{ recur.F }}</th>
-                            <th>{{ recur.Sat }}</th>
-                        </tr>
-                    </tbody>
-                </table>
-                {% for error in recur.M.errors %}
-                    <p class="help is-danger">{{ error }}</p>
-                {% endfor %}
             </div>
         {% endif %}
             
-            {% if columns %}
+        <!-- Notion Columns -->
+        {% if columns %}
             <div class="box">
-                <h1 class="title">My Columns</h1>
+                <h1 class="title">Notion Columns</h1>
+                <h2 class="subtitle">Fill in your info</h2>
                 {% for field in columns if field.widget.input_type != 'hidden' %}
                     {% if field.id == "email" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left">
-                                {{ field(class="input", placeholder=field.label.text) }}
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-at"></span> 
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left">
+                                        {{ field(class="input") }}
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-at"></span> 
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        
                     {% elif field.id == "text" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left">
-                                {{ field(class="input", placeholder=field.label.text) }}
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-format-align-left"></span> 
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left">
+                                        {{ field(class="input") }}
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-format-align-left"></span> 
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                     {% elif field.id == "url" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left">
-                                {{ field(class="input", placeholder=field.label.text) }}
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-link-variant"></span>
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left">
+                                        {{ field(class="input") }}
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-link-variant"></span>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div> 
+
                     {% elif field.id == "phone" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left">
-                                {{ field(class="input", placeholder=field.label.text) }}
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-phone"></span> 
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left">
+                                        {{ field(class="input") }}
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-phone"></span> 
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                     {% elif field.id == "select" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left is-expanded">
-                                <div class="select is-fullwidth">
-                                    {{ field(placeholder=field.label.text) }}
-                                </div>
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>   
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
                             </div>
-                        </div>                    
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left is-expanded">
+                                        <div class="select is-fullwidth">
+                                            {{ field() }}
+                                        </div>
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>  
+                                        </span>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>        
+
                     {% elif field.id == "title" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left">
-                                {{ field(class="input", placeholder=field.label.text) }}
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-format-font"></span>   
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
                             </div>
-                        </div>                    
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left">
+                                        {{ field(class="input") }}
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-format-font"></span>   
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>         
+
                     {% elif field.id == "multi_select" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left is-expanded">
-                                <div class="select is-multiple is-fullwidth">
-                                    {{ field(placeholder=field.label.text, size=2) }}
-                                </div>
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-format-list-bulleted"></span>   
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
                             </div>
-                        </div>                    
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left is-expanded">
+                                        <div class="select is-multiple is-fullwidth">
+                                            {{ field(size=2) }}
+                                        </div>
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-format-list-bulleted"></span>  
+                                        </span>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>          
+
                     {% elif field.id == "person" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left is-expanded">
-                                <div class="select is-multiple is-fullwidth">
-                                    {{ field(placeholder=field.label.text, size=2) }}
-                                </div>
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-account-group"></span>  
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
                             </div>
-                        </div>                     
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left is-expanded">
+                                        <div class="select is-multiple is-fullwidth">
+                                            {{ field(size=2) }}
+                                        </div>
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-account-group"></span>  
+                                        </span>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>         
+
                     {% elif field.id == "number" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left">
-                                {{ field(class="input", placeholder=field.label.text) }}
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-pound"></span>
-                                </span>
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left">
+                                        {{ field(class="input") }}
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-pound"></span>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+
                     {% elif field.id == "date" %}
-                        <div class="field">
-                            {{ field.label }}
-                            <div class="control has-icons-left">
-                                {{ field(class="input", placeholder=field.label.text) }}
-                                <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-calendar-text"></span>
-                                </span>
+                        <div class="field is-horizontal" id="{{ field.name }}_div">
+                            <div class="field-label">
+                                {{ field.label }}
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left">
+                                        {{ field(class="input") }}
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-calendar-text"></span>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        
                     {% endif %}
                 {% endfor %}
                 <div class="field">
                     <div class="control">
-                        {{ columns.submit(class="button") }} 
+                        {{ columns.submit(class="button is-primary") }} 
                     </div>
                 </div>
             </div>
         {% endif %}
     </form>
+</div>
 </section>
 {% endblock %}

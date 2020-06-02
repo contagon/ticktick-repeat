@@ -8,7 +8,7 @@ function recur_options() {
         document.getElementById("start_date").style.display = "block";
         document.getElementById("end_date").style.display = "block";
         document.getElementById("date_options_div").style.display = "block";
-        document.getElementById("recur_days").style.display = "table";
+        document.getElementById("recur_days").style.display = "block";
         document.getElementById("count").style.display = "none";
         date_visibility();
     }
@@ -16,7 +16,7 @@ function recur_options() {
         document.getElementById("start_date").style.display = "block";
         document.getElementById("end_date").style.display = "none";
         document.getElementById("date_options_div").style.display = "block";
-        document.getElementById("recur_days").style.display = "table";
+        document.getElementById("recur_days").style.display = "block";
         document.getElementById("count").style.display = "block";
         date_visibility();
     }
@@ -27,10 +27,10 @@ function recur_options() {
         document.getElementById("recur_days").style.display = "none";
         document.getElementById("count").style.display = "block";
         // Put all dates back in
-        // select = document.getElementById("date_options");
-        // for(i = 0; i < select.options.length; i++){
-        //     document.getElementById(select.options[i].value).style.display = "block";
-        // }
+        select = document.getElementById("date_options");
+        for(i = 0; i < select.options.length; i++){
+            document.getElementById(select.options[i].value.concat("_div")).style.display = "flex";
+        }
     }
 }
 
@@ -38,12 +38,12 @@ function date_visibility() {
     select = document.getElementById("date_options");
     value = select.value;
     for(i = 0; i < select.options.length; i++){
-        // console.log(select.options[i].value)
+        console.log(select.options[i].value)
         if(select.options[i].value == value){
-            document.getElementById(select.options[i].value).style.display = "none";
+            document.getElementById(select.options[i].value.concat("_div")).style.display = "none";
         }
         else{
-            document.getElementById(select.options[i].value).style.display = "block";
+            document.getElementById(select.options[i].value.concat("_div")).style.display = "flex";
         }
     }
 }

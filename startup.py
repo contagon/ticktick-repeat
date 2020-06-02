@@ -10,7 +10,6 @@ from datetime import datetime, timedelta
 
 import os
 
-# connect.connected.data = False
 
 ##################################################
 ##########       SETTING UP FLASK       ##########
@@ -24,24 +23,26 @@ class ConnectionForm(FlaskForm):
     token = StringField('Notion v2 Token')
     submit = SubmitField('Submit')
 
+days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+
 class RecurType(FlaskForm):
     start_date = DateField("Start Date", validators=[Optional()])
     end_date = DateField("End Date", validators=[Optional()])
     count = IntegerField("Count", validators=[Optional()])
+    days = SelectMultipleField("Days", choices=[(i, i) for i in days])
 
     def validate(self):
         result = True
         if not super().validate():
             result = False
-        print(result)
+
         #make sure our start and day selections are good
-        days = [self.M, self.Tu, self.W, self.Th, self.F, self.Sat, self.Sun]
         if self.types.data in ["dates_mix", "dates_both"]:
             if self.start_date.data is None:
                 self.start_date.errors.append("Required Field")
                 result = False
-            if not any([i.data for i in days]):
-                self.M.errors.append("You must choose a day!")
+            if self.days.data == []:
+                self.days.errors.append("You must choose a day!")
                 result = False
 
         #make sure our end date is good
@@ -60,10 +61,6 @@ class RecurType(FlaskForm):
                 result = False
 
         return result
-
-days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
-for day in days:
-    setattr(RecurType, day, BooleanField(day))
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -148,7 +145,7 @@ def home():
             client, collection = connect_notion(connect.url.data, connect.token.data)
             connect.connected.data = "True"
 
-        except Exception as e:
+        except:
             #if we fail to connect, flash message and render OG connect
             connect.url.errors.append("Couldn't connect to url")
             return render_template('home.html', connect=connect)
@@ -164,9 +161,7 @@ def home():
         client, collection = connect_notion(connect.url.data, connect.token.data)
         columns, recur = make_columns(client, collection.get_schema_properties())
         
-        print(connect.validate_on_submit(), recur.validate())
         if connect.validate_on_submit() and recur.validate():
-            print("HERE")
             #push it to notion!
             add_notion(collection, columns.data, recur.data)
 
@@ -189,22 +184,9 @@ def add_notion(collection, params, recur):
     count = recur["count"]
     types = recur["types"]
     date_options = recur["date_options"]
-    days = []
-    if recur["M"]:
-        days.append(0)
-    if recur["Tu"]:
-        days.append(1)
-    if recur["W"]:
-        days.append(2)
-    if recur["Th"]:
-        days.append(3)
-    if recur["F"]:
-        days.append(4)
-    if recur["Sat"]:
-        days.append(5)
-    if recur["Sun"]:
-        days.append(6)
-
+    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    days = [days.index(i) for i in recur['days']]
+    
     #clean out params given
     params.pop('csrf_token')
     params.pop('submit')
