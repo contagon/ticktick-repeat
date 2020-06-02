@@ -18,21 +18,28 @@
         {% endfor %}
 
         <!-- Connect Form -->
-        <h4>Repeat Notion</h4>
-        <h5>Connect to Notion</h5>
-        {{ connect.hidden_tag() }}
-        {{ connect.url.label }}
-        {{ connect.url(class="u-full-width") }}
+        <h1 class="title">Repeat Notion</h1>
+        <h2 class="subtitle">Connect to Notion</h2>
+        <div class="field">
+            <div class="control">
+                {{ connect.hidden_tag() }}
+                {{ connect.url(class="input") }}
+            </div>
+        </div>
         <ul class="errors">
             {% for error in connect.url.errors %}
                 <li>{{ error }}</li>
             {% endfor %}
         </ul>
-        {{ connect.token.label }}
-        {{ connect.token(class="u-full-width") }}
+        <div class="field">
+            <div class="control">
+                {{ connect.hidden_tag() }}
+                {{ connect.token(class="input") }}
+            </div>
+        </div>
         
         <!-- Recur Form -->
-        {% if recur %}
+        <!-- {% if recur %}
             <h5>Recurring Settings</h5>
             {{ recur.types.label }}
             {{ recur.types(class="u-full-width", onchange="recur_options()") }}
@@ -78,19 +85,24 @@
                   </tr>
                 </tbody>
             </table>
-        {% endif %}
+        {% endif %}-->
         
-        <!-- Notion Form -->
+
         {% if columns %}
             {% for field in columns if field.widget.input_type != 'hidden' %}
-            <div id={{field.name}}>
-                {{ field.label }}
-                {{ field(class="u-full-width") }}
+            <div id="field {{field.name}}">
+                <div class="control">
+                    {{ field.label }}
+                    {{ field(class="u-full-width input") }}
+                </div>
             </div>
             {% endfor %}
         {% endif %}
-
-        {{ connect.submit }}
+        <div class="field">
+            <div class="control">
+                {{ connect.submit(class="button") }} 
+            </div>
+        </div>
     </form>
 </div>
 {% endblock %}

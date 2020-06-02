@@ -20,8 +20,8 @@ class Config():
 
 class ConnectionForm(FlaskForm):
     connected = HiddenField("Connected")
-    url = StringField('URL', validators=[DataRequired(), URL()])
-    token = StringField('v2 Token')
+    url = StringField('URL', validators=[DataRequired(), URL()], render_kw={"placeholder": "URL to Notion Database"})
+    token = StringField('v2 Token', render_kw={"placeholder": "Notion v2 Token"})
     submit = SubmitField('Submit')
 
 class RecurType(FlaskForm):
