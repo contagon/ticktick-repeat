@@ -10,7 +10,6 @@ function recur_options() {
         document.getElementById("date_options_div").style.display = "block";
         document.getElementById("recur_days").style.display = "table";
         document.getElementById("count").style.display = "none";
-        document.getElementById("recur_settings").className = "grid-container thirds"
         date_visibility();
     }
     else if(type == "dates_mix"){
@@ -19,7 +18,6 @@ function recur_options() {
         document.getElementById("date_options_div").style.display = "block";
         document.getElementById("recur_days").style.display = "table";
         document.getElementById("count").style.display = "block";
-        document.getElementById("recur_settings").className = "grid-container thirds"
         date_visibility();
     }
     else if(type == "number"){
@@ -28,12 +26,11 @@ function recur_options() {
         document.getElementById("date_options_div").style.display = "none";
         document.getElementById("recur_days").style.display = "none";
         document.getElementById("count").style.display = "block";
-        document.getElementById("recur_settings").className = "grid-container full"
         // Put all dates back in
-        select = document.getElementById("date_options");
-        for(i = 0; i < select.options.length; i++){
-            document.getElementById(select.options[i].value).style.display = "block";
-        }
+        // select = document.getElementById("date_options");
+        // for(i = 0; i < select.options.length; i++){
+        //     document.getElementById(select.options[i].value).style.display = "block";
+        // }
     }
 }
 

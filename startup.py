@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, StringField, BooleanField, \
         SelectField, FileField, HiddenField, SelectMultipleField, RadioField
 from wtforms.fields.html5 import IntegerField, DateField, TimeField, URLField, DecimalField, EmailField, TelField
-from wtforms.validators import DataRequired, URL, NumberRange, Email
+from wtforms.validators import DataRequired, URL, NumberRange, Email, Optional
 from notion.client import NotionClient
 
 from datetime import datetime, timedelta
@@ -25,20 +25,41 @@ class ConnectionForm(FlaskForm):
     submit = SubmitField('Submit')
 
 class RecurType(FlaskForm):
-    start_date = DateField("Start Date", validators=[])
-    end_date = DateField("End Date", validators=[])
-    count = IntegerField("Count", validators=[NumberRange(min=1)])
+    start_date = DateField("Start Date", validators=[Optional()])
+    end_date = DateField("End Date", validators=[Optional()])
+    count = IntegerField("Count", validators=[Optional()])
 
     def validate(self):
-        super().validate()
-        #make sure our start and end dates are good
-        if self.types.data == "dates_both" and self.start_date.data >= self.end_date.data:
-            self.end_date.errors.append("End Date is before or on Starting Date")
-        
-        #make sure they choose at least one day when it's required
+        result = True
+        if not super().validate():
+            result = False
+        print(result)
+        #make sure our start and day selections are good
         days = [self.M, self.Tu, self.W, self.Th, self.F, self.Sat, self.Sun]
-        if self.types.data != "number" and not any([i.data for i in days]):
-            self.M.errors.append("You must choose a day!")
+        if self.types.data in ["dates_mix", "dates_both"]:
+            if self.start_date.data is None:
+                self.start_date.errors.append("Required Field")
+                result = False
+            if not any([i.data for i in days]):
+                self.M.errors.append("You must choose a day!")
+                result = False
+
+        #make sure our end date is good
+        if self.types.data == "dates_both":
+            if self.end_date.data is None:
+                self.end_date.errors.append("Required Field")
+                result = False
+            elif self.start_date.data is not None:
+                if self.start_date.data >= self.end_date.data:
+                    self.end_date.errors.append("End Date is before or on Starting Date")
+                    result = False
+
+        if self.types.data == "number":
+            if self.count.data < 1:
+                self.count.errors.append("Enter a number greater than 0")
+                result = False
+
+        return result
 
 days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 for day in days:
@@ -60,7 +81,7 @@ def connect_notion(url, token):
 def make_columns(client, schema):
     #Put all columns into  a field
     dates = []
-    fields = dict()
+    fields = {"submit": SubmitField('Submit')}
     for column in schema:
         if column['type'] == 'title' or column['type'] == 'text':
             fields[ column['slug'] ] = StringField(column['name'], validators=[], id=column['type'])
@@ -129,7 +150,7 @@ def home():
 
         except Exception as e:
             #if we fail to connect, flash message and render OG connect
-            flash(e)
+            connect.url.errors.append("Couldn't connect to url")
             return render_template('home.html', connect=connect)
 
         #if we connected properly, give them notion connect
@@ -142,8 +163,10 @@ def home():
         #pull columns out of notion to make notion connect
         client, collection = connect_notion(connect.url.data, connect.token.data)
         columns, recur = make_columns(client, collection.get_schema_properties())
-
-        if connect.validate_on_submit() and recur.validate_on_submit(): 
+        
+        print(connect.validate_on_submit(), recur.validate())
+        if connect.validate_on_submit() and recur.validate():
+            print("HERE")
             #push it to notion!
             add_notion(collection, columns.data, recur.data)
 
@@ -184,6 +207,7 @@ def add_notion(collection, params, recur):
 
     #clean out params given
     params.pop('csrf_token')
+    params.pop('submit')
 
     # Set up iterative variables
     if types in ["dates_both", "dates_mix"]:

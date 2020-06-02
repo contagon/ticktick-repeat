@@ -5,198 +5,248 @@
 {% if recur %}
     <script>
         window.onload = function() {
-            recur_options();
-            date_visibility();
+            // recur_options();
+            // date_visibility();
         };
     </script>
 {% endif %}
-<div class="container">
+<section class="section">
     <form method="POST" action="">
-        <!-- Any Error Messages -->
-        {% for message in get_flashed_messages() %}
-            <div class="alert-error">{{ message }}</div>
-        {% endfor %}
+        {% if not recur %}
+            <div class="box">
+        {% else %}
+            <div class="box" style="display: none;">
+        {% endif %}
+                <h1 class="title">Repeat Notion</h1>
+                <h2 class="subtitle">Connect to Notion</h2>
+                <!-- Connect Form -->
+                <div class="field">
+                    <div class="control">
+                        {{ connect.hidden_tag() }}
+                        {{ connect.url(class="input", placeholder=connect.url.label.text) }}
+                    </div>
+                    {% for error in connect.url.errors %}
+                        <p class="help is-danger">{{ error }}</p>
+                    {% endfor %}
+                </div>
+                <div class="field has-addons">
+                    <div class="control is-expanded">
+                        {{ connect.token(class="input", placeholder=connect.token.label.text) }}
+                    </div>
+                    <div class="control">
+                        {{ connect.submit(class="button") }} 
+                    </div>
+                </div>
+            </div>
 
-        <!-- Connect Form -->
-        <h1 class="title">Repeat Notion</h1>
-        <h2 class="subtitle">Connect to Notion</h2>
-        <div class="field">
-            <div class="control">
-                {{ connect.hidden_tag() }}
-                {{ connect.url(class="input", placeholder=connect.url.label.text) }}
-            </div>
-        </div>
-        <ul class="errors">
-            {% for error in connect.url.errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-        <div class="field">
-            <div class="control">
-                {{ connect.token(class="input", placeholder=connect.token.label.text) }}
-            </div>
-        </div>
         
         <!-- Recur Form -->
-        <!-- {% if recur %}
-            <h5>Recurring Settings</h5>
-            {{ recur.types.label }}
-            {{ recur.types(class="u-full-width", onchange="recur_options()") }}
-            <div class="grid-container thirds" id="recur_settings">
-                <div id="{{ recur.date_options.name }}_div">
-                    {{ recur.date_options.label }}
-                    {{ recur.date_options(class="u-full-width", onchange="date_visibility()") }}
+        {% if recur %}
+            <div class="box">
+                <h1 class="title">Recurring Settings</h1>
+                <div class="field">
+                    {{ recur.types.label }}
+                    <div class="control is-expanded">
+                        <div class="select is-fullwidth">
+                            {{ recur.types(onchange="recur_options()") }}
+                        </div>
+                    </div>
                 </div>
-                <div id="{{ recur.start_date.name }}">
-                    {{ recur.start_date.label }}
-                    {{ recur.start_date(class="u-full-width") }}
+                <div class="columns is-mobile">
+                    <div class="column" id="{{ recur.date_options.name }}_div">
+                        <div class="field">
+                            {{ recur.date_options.label }}
+                            <div class="control is-expanded">
+                                <div class="select is-fullwidth">
+                                    <!-- {{ recur.date_options(onchange="date_visibility()") }} -->
+                                    {{ recur.date_options() }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column" id="{{ recur.start_date.name }}">
+                        <div class="field">
+                            {{ recur.start_date.label }}
+                            <div class="control">
+                                {{ recur.start_date(class="input") }}
+                            </div>
+                            {% for error in recur.start_date.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="column" id="{{ recur.end_date.name }}">
+                        <div class="field">
+                            {{ recur.end_date.label }}
+                            <div class="control">
+                                {{ recur.end_date(class="input") }}
+                            </div>
+                            {% for error in recur.end_date.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div class="column" id="{{ recur.count.name }}">
+                        <div class="field">
+                            {{ recur.count.label }}
+                            <div class="control">
+                                {{ recur.count(class="input") }}
+                            </div>
+                            {% for error in recur.count.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
                 </div>
-                <div id="{{ recur.end_date.name }}">
-                    {{ recur.end_date.label }}
-                    {{ recur.end_date(class="u-full-width") }}
-                    <ul class="errors">
-                        {% for error in recur.end_date.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div id="{{ recur.count.name }}">
-                    {{ recur.count.label }}
-                    {{ recur.count(class="u-full-width") }}
-                </div>
+                <table class="u-full-width" id="recur_days">
+                    <thead>
+                        <tr>
+                            <th>{{ recur.Sun.label }}</th>
+                            <th>{{ recur.M.label }}</th>
+                            <th>{{ recur.Tu.label }}</th>
+                            <th>{{ recur.W.label }}</th>
+                            <th>{{ recur.Th.label }}</th>
+                            <th>{{ recur.F.label }}</th>
+                            <th>{{ recur.Sat.label }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>{{ recur.Sun }}</th>
+                            <th>{{ recur.M }}</th>
+                            <th>{{ recur.Tu }}</th>
+                            <th>{{ recur.W }}</th>
+                            <th>{{ recur.Th }}</th>
+                            <th>{{ recur.F }}</th>
+                            <th>{{ recur.Sat }}</th>
+                        </tr>
+                    </tbody>
+                </table>
+                {% for error in recur.M.errors %}
+                    <p class="help is-danger">{{ error }}</p>
+                {% endfor %}
             </div>
-            <table class="u-full-width" id="recur_days">
-                <thead>
-                  <tr>
-                    <th>{{ recur.Sun.label }}</th>
-                    <th>{{ recur.M.label }}</th>
-                    <th>{{ recur.Tu.label }}</th>
-                    <th>{{ recur.W.label }}</th>
-                    <th>{{ recur.Th.label }}</th>
-                    <th>{{ recur.F.label }}</th>
-                    <th>{{ recur.Sat.label }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <th>{{ recur.Sun }}</th>
-                    <th>{{ recur.M }}</th>
-                    <ul class="errors">
-                        {% for error in recur.M.errors %}
-                            <li>{{ error }}</li>
-                        {% endfor %}
-                    </ul>
-                    <th>{{ recur.Tu }}</th>
-                    <th>{{ recur.W }}</th>
-                    <th>{{ recur.Th }}</th>
-                    <th>{{ recur.F }}</th>
-                    <th>{{ recur.Sat }}</th>
-                  </tr>
-                </tbody>
-            </table>
-        {% endif %} -->
-        
-
-        {% if columns %}
-            {% for field in columns if field.widget.input_type != 'hidden' %}
-                {% if field.id == "email" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-at"></span> 
-                            </span>
-                        </div>
-                    </div>
-                {% elif field.id == "text" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-format-align-left"></span> 
-                            </span>
-                        </div>
-                    </div>
-                {% elif field.id == "url" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-link-variant"></span>
-                            </span>
-                        </div>
-                <   /div> 
-                {% elif field.id == "phone" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-phone"></span> 
-                            </span>
-                        </div>
-                    </div>
-                {% elif field.id == "select" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>   
-                            </span>
-                        </div>
-                </  div>                    
-                {% elif field.id == "title" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-format-font"></span>   
-                            </span>
-                        </div>
-                </  div>                    
-                {% elif field.id == "multi_select" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-format-list-bulleted"></span>   
-                            </span>
-                        </div>
-                </  div>                    
-                {% elif field.id == "person" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-account-group"></span>  
-                            </span>
-                        </div>
-                </  div>                     
-                {% elif field.id == "number" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-pound"></span>
-                            </span>
-                        </div>
-                    </div>
-                {% elif field.id == "date" %}
-                    <div id="field">
-                        <div class="control has-icons-left">
-                            {{ field(class="input", placeholder=field.label.text) }}
-                            <span class="icon is-left">
-                                <span class="mdi mdi-24px mdi-calendar-text"></span>
-                            </span>
-                        </div>
-                    </div>
-                {% endif %}
-            {% endfor %}
         {% endif %}
-        <div class="field">
-                <div class="control">
-                  {{ connect.submit(class="button") }} 
+            
+            {% if columns %}
+            <div class="box">
+                <h1 class="title">My Columns</h1>
+                {% for field in columns if field.widget.input_type != 'hidden' %}
+                    {% if field.id == "email" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left">
+                                {{ field(class="input", placeholder=field.label.text) }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-at"></span> 
+                                </span>
+                            </div>
+                        </div>
+                    {% elif field.id == "text" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left">
+                                {{ field(class="input", placeholder=field.label.text) }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-format-align-left"></span> 
+                                </span>
+                            </div>
+                        </div>
+                    {% elif field.id == "url" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left">
+                                {{ field(class="input", placeholder=field.label.text) }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-link-variant"></span>
+                                </span>
+                            </div>
+                        </div> 
+                    {% elif field.id == "phone" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left">
+                                {{ field(class="input", placeholder=field.label.text) }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-phone"></span> 
+                                </span>
+                            </div>
+                        </div>
+                    {% elif field.id == "select" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left is-expanded">
+                                <div class="select is-fullwidth">
+                                    {{ field(placeholder=field.label.text) }}
+                                </div>
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>   
+                                </span>
+                            </div>
+                        </div>                    
+                    {% elif field.id == "title" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left">
+                                {{ field(class="input", placeholder=field.label.text) }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-format-font"></span>   
+                                </span>
+                            </div>
+                        </div>                    
+                    {% elif field.id == "multi_select" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left is-expanded">
+                                <div class="select is-multiple is-fullwidth">
+                                    {{ field(placeholder=field.label.text, size=2) }}
+                                </div>
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-format-list-bulleted"></span>   
+                                </span>
+                            </div>
+                        </div>                    
+                    {% elif field.id == "person" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left is-expanded">
+                                <div class="select is-multiple is-fullwidth">
+                                    {{ field(placeholder=field.label.text, size=2) }}
+                                </div>
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-account-group"></span>  
+                                </span>
+                            </div>
+                        </div>                     
+                    {% elif field.id == "number" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left">
+                                {{ field(class="input", placeholder=field.label.text) }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-pound"></span>
+                                </span>
+                            </div>
+                        </div>
+                    {% elif field.id == "date" %}
+                        <div class="field">
+                            {{ field.label }}
+                            <div class="control has-icons-left">
+                                {{ field(class="input", placeholder=field.label.text) }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-calendar-text"></span>
+                                </span>
+                            </div>
+                        </div>
+                    {% endif %}
+                {% endfor %}
+                <div class="field">
+                    <div class="control">
+                        {{ columns.submit(class="button") }} 
+                    </div>
+                </div>
             </div>
-        </div>
+        {% endif %}
     </form>
-</div>
+</section>
 {% endblock %}
