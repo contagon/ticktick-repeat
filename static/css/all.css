@@ -8593,8 +8593,16 @@ body {
   height: 2.5rem !important;
 }
 .select2-container .select2-selection__rendered {
-  margin-left: 2em;
-  padding: 0.285rem;
+  padding-top: calc(0.5em - 1px);
+  padding-bottom: calc(0.5em - 1px);
+}
+.select2-container .select2-selection--single .select2-selection__rendered {
+  height: 100%;
+  line-height: 1.5;
+}
+
+.has-icons-left .select2-container .select2-selection__rendered {
+  padding-left: 2.5em !important;
 }
 
 .select2-wrapper .select2-container .select2-selection {

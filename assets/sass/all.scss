@@ -16,13 +16,12 @@ $fullhd-enabled: false;
 $tablet: 550px;
 
 // Make Forms a bit darker
-
 $input-icon-color: $grey-light;
 $input-border-color: $grey-light;
 
 @import "bulma/bulma.sass";
 
-
+// Make small pages center vertically
 body{
     min-height: 80vh;
     display: flex;
@@ -32,16 +31,24 @@ body{
     flex-grow: 1;
   }
 
+// Tons of ugly stuff to get select2 to look nice
 .select2-container {
     .select2-selection--single, .select2-selection--multiple {
         height: 2.5rem !important;
     }
     .select2-selection__rendered {
-        margin-left: 2em;
-        padding: 0.285rem;
-      }
+        padding-top: calc(0.5em - 1px);
+        padding-bottom: calc(0.5em - 1px);
+    }
+    .select2-selection--single .select2-selection__rendered{
+        height: 100%;
+        line-height: 1.5;
+    }
 }
-  .select2-wrapper {
+.has-icons-left .select2-container .select2-selection__rendered{
+    padding-left: 2.5em !important;
+}
+.select2-wrapper {
     .select2-container {
         .select2-selection {
             transition: border-color $speed;
@@ -119,7 +126,6 @@ body{
         }
     }
 }
-
-  .select2-selection__arrow b{
+.select2-selection__arrow b{
     display:none !important;
 }

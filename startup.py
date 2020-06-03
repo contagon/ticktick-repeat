@@ -23,7 +23,7 @@ class ConnectionForm(FlaskForm):
     token = StringField('Notion v2 Token')
     submit = SubmitField('Submit')
 
-days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
 
 class RecurType(FlaskForm):
     start_date = DateField("Start Date", validators=[Optional()])
@@ -184,7 +184,7 @@ def add_notion(collection, params, recur):
     count = recur["count"]
     types = recur["types"]
     date_options = recur["date_options"]
-    days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
     days = [days.index(i) for i in recur['days']]
     
     #clean out params given
@@ -220,7 +220,7 @@ def add_notion(collection, params, recur):
                 still_going = False
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host= '0.0.0.0', debug=True)
 
 
         

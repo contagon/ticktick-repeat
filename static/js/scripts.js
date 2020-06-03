@@ -4,11 +4,13 @@ if ( window.history.replaceState ) {
   
 function recur_options() {
     type = document.getElementById("types").value;
+    // console.log( type )
+    // console.log( document.getElementById("date_options_div").style.display )
     if(type == "dates_both"){
         document.getElementById("start_date").style.display = "block";
         document.getElementById("end_date").style.display = "block";
         document.getElementById("date_options_div").style.display = "block";
-        document.getElementById("recur_days").style.display = "block";
+        document.getElementById("recur_days").style.display = "flex";
         document.getElementById("count").style.display = "none";
         date_visibility();
     }
@@ -16,7 +18,7 @@ function recur_options() {
         document.getElementById("start_date").style.display = "block";
         document.getElementById("end_date").style.display = "none";
         document.getElementById("date_options_div").style.display = "block";
-        document.getElementById("recur_days").style.display = "block";
+        document.getElementById("recur_days").style.display = "flex";
         document.getElementById("count").style.display = "block";
         date_visibility();
     }
@@ -38,7 +40,6 @@ function date_visibility() {
     select = document.getElementById("date_options");
     value = select.value;
     for(i = 0; i < select.options.length; i++){
-        console.log(select.options[i].value)
         if(select.options[i].value == value){
             document.getElementById(select.options[i].value.concat("_div")).style.display = "none";
         }
@@ -46,4 +47,9 @@ function date_visibility() {
             document.getElementById(select.options[i].value.concat("_div")).style.display = "block";
         }
     }
+}
+
+function add_all_days(){
+    $("#days_selector > option").prop("selected","selected");
+    $("#days_selector").trigger("change");
 }
