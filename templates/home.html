@@ -8,7 +8,13 @@
             recur_options();
             date_visibility();
         };
-    </script>
+        $(document).ready(function() {
+            $('.js-example-basic-single').select2({width: "100%"});
+            $('.js-example-basic-multiple').select2({width: "100%"});
+            $('js-example-basic-multiples > option').prop("selected",true).trigger("change");
+
+        });
+        </script>
 {% endif %}
 <section class="section is-vertical-center">
     <div class="container">
@@ -46,13 +52,13 @@
             <div class="box">
                 <h1 class="title">Recurring Settings</h1>
                 <h2 class="subtitle">Choose how to iteratively add things</h2>
-                <div class="columns is-mobile" style="margin-bottom: -0.75rem;">
+                <div class="columns is-0" style="margin-bottom: -0.75rem;">
                     <div class="column">
                         <div class="field">
                             {{ recur.types.label }}
                             <div class="control is-expanded">
                                 <div class="select is-fullwidth">
-                                    {{ recur.types(onchange="recur_options()") }}
+                                    {{ recur.types(onchange="recur_options()", class="js-example-basic-single") }}
                                 </div>
                             </div>
                         </div>
@@ -68,19 +74,21 @@
                         </div>
                     </div>
                 </div>
-                <div class="columns is-mobile" style="margin-bottom: -0.75rem;">
-                    <div class="column" id="recur_days">
+                <div class="columns is-0" style="margin-bottom: -0.75rem;">
+                    <div class="column is-narrow" id="recur_days">
                         <div class="field">
                             {{ recur.days.label }}
-                            <div class="control">
-                                {{ recur.days(class="input") }}
+                            <div class="control is-expanded">
+                                <div class="select is-fullwidth">
+                                    {{ recur.days(class="js-example-basic-multiple") }}
+                                </div>
                             </div>
                             {% for error in recur.days.errors %}
                                 <p class="help is-danger">{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="column is-narrow" id="{{ recur.start_date.name }}">
+                    <div class="column" id="{{ recur.start_date.name }}">
                         <div class="field">
                             {{ recur.start_date.label }}
                             <div class="control">
@@ -91,7 +99,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="column is-narrow" id="{{ recur.end_date.name }}">
+                    <div class="column" id="{{ recur.end_date.name }}">
                         <div class="field">
                             {{ recur.end_date.label }}
                             <div class="control">
@@ -174,7 +182,7 @@
                             </div>
                         </div> 
 
-                    {% elif field.id == "phone" %}
+                    {% elif field.id == "phone_number" %}
                         <div class="field is-horizontal">
                             <div class="field-label">
                                 {{ field.label }}
@@ -200,7 +208,7 @@
                                 <div class="field">
                                     <div class="control has-icons-left is-expanded">
                                         <div class="select is-fullwidth">
-                                            {{ field() }}
+                                            {{ field(class="js-example-basic-single") }}
                                         </div>
                                         <span class="icon is-left">
                                             <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>  
@@ -236,7 +244,7 @@
                                 <div class="field">
                                     <div class="control has-icons-left is-expanded">
                                         <div class="select is-multiple is-fullwidth">
-                                            {{ field(size=2) }}
+                                            {{ field(class="js-example-basic-multiple") }}
                                         </div>
                                         <span class="icon is-left">
                                             <span class="mdi mdi-24px mdi-format-list-bulleted"></span>  
