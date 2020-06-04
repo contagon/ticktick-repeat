@@ -357,12 +357,10 @@
                         
                     {% endif %}
                 {% endfor %}
-                <div class="field is-grouped">
-                    <div class="control">
+                <div class="container">
+                    <div class="field is-grouped" style="display: block;">
                         {{ connect.submit(class="button is-primary") }} 
-                    </div>
-                    <div class="control">
-                        {{ connect.goback(class="button is-danger") }} 
+                        {{ connect.goback(class="button is-danger is-pulled-right") }} 
                     </div>
                 </div>
             </div>

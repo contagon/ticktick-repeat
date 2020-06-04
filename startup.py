@@ -5,11 +5,30 @@ from wtforms import SubmitField, StringField, BooleanField, \
 from wtforms.fields.html5 import IntegerField, DateField, TimeField, URLField, DecimalField, EmailField, TelField
 from wtforms.validators import DataRequired, URL, NumberRange, Email, Optional
 from notion.client import NotionClient
+from decimal import Decimal
+from wtforms.compat import itervalues
+from collections import OrderedDict
 
 from datetime import datetime, timedelta
 
 import os
 
+class SortedForm(FlaskForm):
+    def __iter__(self):
+        """Iterate form fields in alphabetical order, with title first."""
+        #now sort them
+        fields = OrderedDict(sorted(self._fields.items(), key=lambda x: x[1].name))
+        
+        #find title
+        title = None
+        for k,v in fields.items():
+            if v.id == "title":
+                title = k
+        #and push title to top
+        if title is not None:
+            fields.move_to_end(title, last=False)
+
+        return iter(itervalues(fields))
 
 ##################################################
 ##########       SETTING UP FLASK       ##########
@@ -17,7 +36,7 @@ import os
 class Config():
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess'
 
-class ConnectionForm(FlaskForm):
+class ConnectionForm(SortedForm):
     connected = HiddenField("Connected")
     url = StringField('URL to Notion Database', validators=[DataRequired(), URL()])
     token = StringField('Notion v2 Token')
@@ -25,7 +44,7 @@ class ConnectionForm(FlaskForm):
     goback = SubmitField('Go Back')
     remember = BooleanField("Remember Me")
 
-class RecurType(FlaskForm):
+class RecurType(SortedForm):
     start_date = DateField("Start Date", validators=[Optional()])
     end_date = DateField("End Date", validators=[Optional()])
     count = IntegerField("Count", validators=[Optional()])
@@ -83,7 +102,7 @@ def connect_notion(url, token):
 def make_columns(client, schema):
     #Put all columns into  a field
     dates = []
-    fields = {"submit": SubmitField('Submit')}
+    fields = dict()
     for column in schema:
         if column['type'] == 'title' or column['type'] == 'text':
             fields[ column['slug'] ] = StringField(column['name'], validators=[], id=column['type'])
@@ -121,7 +140,7 @@ def make_columns(client, schema):
             fields[ column['slug'] ] = SelectMultipleField(column['name'], validators=[], choices=options, id=column['type'])
 
     #apply all attributes of our temporary form
-    NotionColumns = type("NotionColumns", (FlaskForm,), fields)
+    NotionColumns = type("NotionColumns", (SortedForm,), fields)
 
     #fill out the rest of our recurring form
     #includes what types to iterate over, and if there's any of them at all
@@ -151,7 +170,14 @@ def home():
 
     #****************** GO BACK BUTTON ******************
     if connect.goback.data:
-        return render_template('home.html', connect=connect)
+        #make it seem like we were never connected
+        connect.remember.data = True
+        connect.connected.data = "False"
+        res = make_response( render_template('home.html', connect=connect) )
+        #remove cookies to we don't accidentally reload them
+        res.set_cookie("token_v2", "", max_age=0)
+        res.set_cookie("url", "", max_age=0)
+        return res
 
     #****************** CONNECTION FORM ******************
     if connect.validate_on_submit() and connect.connected.data == "False":
@@ -186,7 +212,7 @@ def home():
         client, collection = connect_notion(connect.url.data, connect.token.data)
         columns, recur = make_columns(client, collection.get_schema_properties())
         
-        if connect.validate_on_submit() and recur.validate():
+        if connect.validate_on_submit() and recur.validate_on_submit():
             #push it to notion!
             add_notion(collection, columns.data, recur.data)
 
@@ -228,6 +254,9 @@ def add_notion(collection, params, recur):
 
     #clean out params given
     params.pop('csrf_token')
+    for k,v in params.items():
+        if isinstance(v, Decimal):
+            params[k] = float(v)
 
     # Set up iterative variables
     if types in ["dates_both", "dates_mix"]:

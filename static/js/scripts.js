@@ -31,7 +31,7 @@ function recur_options() {
         // Put all dates back in
         select = document.getElementById("date_options");
         for(i = 0; i < select.options.length; i++){
-            document.getElementById(select.options[i].value.concat("_div")).style.display = "block";
+            document.getElementById(select.options[i].value.concat("_div")).style.display = "flex";
         }
     }
 }
@@ -44,7 +44,7 @@ function date_visibility() {
             document.getElementById(select.options[i].value.concat("_div")).style.display = "none";
         }
         else{
-            document.getElementById(select.options[i].value.concat("_div")).style.display = "block";
+            document.getElementById(select.options[i].value.concat("_div")).style.display = "flex";
         }
     }
 }
