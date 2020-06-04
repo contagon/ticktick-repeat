@@ -10,7 +10,7 @@ function recur_options() {
         document.getElementById("start_date").style.display = "block";
         document.getElementById("end_date").style.display = "block";
         document.getElementById("date_options_div").style.display = "block";
-        document.getElementById("recur_days").style.display = "flex";
+        document.getElementById("recur_days").style.display = "block";
         document.getElementById("count").style.display = "none";
         date_visibility();
     }
@@ -18,7 +18,7 @@ function recur_options() {
         document.getElementById("start_date").style.display = "block";
         document.getElementById("end_date").style.display = "none";
         document.getElementById("date_options_div").style.display = "block";
-        document.getElementById("recur_days").style.display = "flex";
+        document.getElementById("recur_days").style.display = "block";
         document.getElementById("count").style.display = "block";
         date_visibility();
     }
@@ -49,7 +49,10 @@ function date_visibility() {
     }
 }
 
-function add_all_days(){
-    $("#days_selector > option").prop("selected","selected");
-    $("#days_selector").trigger("change");
+function toggle(source) {
+    var checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i] != source)
+            checkboxes[i].checked = source.checked;
+    }
 }

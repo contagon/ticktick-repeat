@@ -11,10 +11,10 @@
         $(document).ready(function() {
             $('.s2-single').select2({width: "100%", closeOnSelect: true});
             $('.s2-multiple').select2({width: "100%"});
-            // if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-            //     $(".s2-single").select2('destroy');
-            //     $(".s2-multiple").select2('destroy');
-            // }
+            if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+                $(".s2-single").select2('destroy');
+                $(".s2-multiple").select2('destroy');
+            }
         });
         </script>
 {% endif %}
@@ -58,23 +58,23 @@
                     {{ recur.types.label }}
                     <div class="control is-expanded">
                         <div class="select is-fullwidth">
-                            {{ recur.types(onchange="recur_options()", class="s2-single") }}
+                            {{ recur.types(onchange="recur_options()") }}
                         </div>
                     </div>
                 </div>
-                <div class="columns is-0" style="margin-bottom: -0.75rem;">
-                    <div class="column" id="{{ recur.date_options.name }}_div" style="display: block;">
+                <div class="columns is-multiline is-centered is-0" style="margin-bottom: -0.75rem;">
+                    <div class="column is-narrow" id="{{ recur.date_options.name }}_div" style="display: block;">
                         <div class="field">
                             {{ recur.date_options.label }}
                             <div class="control is-expanded">
                                 <div class="select is-fullwidth">
-                                    {{ recur.date_options(onchange="date_visibility()", class="s2-single") }}
+                                    {{ recur.date_options(onchange="date_visibility()") }}
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="column" id="{{ recur.start_date.name }}" style="display: block;">
-                        <div class="field is-narrow">
+                    <div class="column is-narrow" id="{{ recur.start_date.name }}" style="display: block;">
+                        <div class="field">
                             {{ recur.start_date.label }}
                             <div class="control">
                                 {{ recur.start_date(class="input") }}
@@ -84,8 +84,8 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="column" id="{{ recur.end_date.name }}" style="display: block;">
-                        <div class="field is-narrow">
+                    <div class="column is-narrow" id="{{ recur.end_date.name }}" style="display: block;">
+                        <div class="field">
                             {{ recur.end_date.label }}
                             <div class="control">
                                 {{ recur.end_date(class="input") }}
@@ -95,7 +95,7 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="column" id="{{ recur.count.name }}" style="display: block;">
+                    <div class="column is-narrow" id="{{ recur.count.name }}" style="display: block;">
                         <div class="field">
                             {{ recur.count.label }}
                             <div class="control">
@@ -106,27 +106,33 @@
                             {% endfor %}
                         </div>
                     </div>
-                </div>
-                <div class="columns is-0" style="margin-bottom: -0.75rem;" id="recur_{{ recur.days.name }}" style="display: flex;">
-                    <div class="column">
-                        <div class="field">
-                            {{ recur.days.label }}
-                            <div class="control is-expanded">
-                                <div class="select is-fullwidth">
-                                    {{ recur.days(class="s2-multiple", id="days_selector") }}
-                                </div>
-                            </div>
-                            {% for error in recur.days.errors %}
-                                <p class="help is-danger">{{ error }}</p>
-                            {% endfor %}
-                        </div>
-                    </div>
                     <div class="column is-narrow">
-                        <div class="field" style="padding-top: 22px;">
-                            <div class="control">
-                                <input type="button" class="button is-primary" value="Add All" onclick="add_all_days()">
-                            </div>
-                        </div>
+                        <table class="table is-narrow" id="recur_days">
+                            <thead>
+                                <tr>
+                                    <th>Sun</th>
+                                    <th>M</th>
+                                    <th>Tu</th>
+                                    <th>W</th>
+                                    <th>Th</th>
+                                    <th>F</th>
+                                    <th>Sat</th>
+                                    <th>All</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th style="text-align:center">{{ recur.Sun }}</th>
+                                    <th style="text-align:center">{{ recur.M }}</th>
+                                    <th style="text-align:center">{{ recur.Tu }}</th>
+                                    <th style="text-align:center">{{ recur.W }}</th>
+                                    <th style="text-align:center">{{ recur.Th }}</th>
+                                    <th style="text-align:center">{{ recur.F }}</th>
+                                    <th style="text-align:center">{{ recur.Sat }}</th>
+                                    <th style="text-align:center"><input type="checkbox" id="all-days" onclick="toggle(this);" ></th>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
