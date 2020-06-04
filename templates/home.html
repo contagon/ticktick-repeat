@@ -46,6 +46,8 @@
                         {{ connect.submit(class="button is-primary") }} 
                     </div>
                 </div>
+                {{ connect.remember }}
+                {{ connect.remember.label }}
             </div>
 
         
@@ -221,7 +223,7 @@
                                 <div class="field">
                                     <div class="control has-icons-left is-expanded">
                                         <div class="select is-fullwidth">
-                                            {{ field(class="s2-single") }}
+                                            {{ field(class="s2-single", id=field.name) }}
                                         </div>
                                         <span class="icon is-left">
                                             <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>  
@@ -257,7 +259,7 @@
                                 <div class="field">
                                     <div class="control has-icons-left is-expanded">
                                         <div class="select is-multiple is-fullwidth">
-                                            {{ field(class="s2-multiple") }}
+                                            {{ field(class="s2-multiple", id=field.name) }}
                                         </div>
                                         <span class="icon is-left">
                                             <span class="mdi mdi-24px mdi-format-list-bulleted"></span>  
@@ -265,7 +267,26 @@
                                     </div>
                                 </div>    
                             </div>
-                        </div>          
+                        </div>
+                        
+                    {% elif field.id == "relation" %}
+                        <div class="field is-horizontal">
+                            <div class="field-label">
+                                {{ field.label }}
+                            </div>
+                            <div class="field-body">
+                                <div class="field">
+                                    <div class="control has-icons-left is-expanded">
+                                        <div class="select is-multiple is-fullwidth">
+                                            {{ field(class="s2-multiple", id=field.name) }}
+                                        </div>
+                                        <span class="icon is-left">
+                                            <span class="mdi mdi-24px mdi-format-list-bulleted"></span>  
+                                        </span>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>
 
                     {% elif field.id == "person" %}
                         <div class="field is-horizontal">
@@ -276,7 +297,7 @@
                                 <div class="field">
                                     <div class="control has-icons-left is-expanded">
                                         <div class="select is-multiple is-fullwidth">
-                                            {{ field(class="s2-multiple") }}
+                                            {{ field(class="s2-multiple", id=field.name) }}
                                         </div>
                                         <span class="icon is-left">
                                             <span class="mdi mdi-24px mdi-account-group"></span>  
@@ -319,12 +340,29 @@
                                 </div>
                             </div>
                         </div>
+
+                    {% elif field.id == "checkbox" %}
+                    <div class="field is-horizontal" id="{{ field.name }}_div">
+                        <div class="field-label">
+                            {{ field.label }}
+                        </div>
+                        <div class="field-body">
+                            <div class="field">
+                                <div class="control">
+                                    {{ field }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                         
                     {% endif %}
                 {% endfor %}
-                <div class="field">
+                <div class="field is-grouped">
                     <div class="control">
                         {{ connect.submit(class="button is-primary") }} 
+                    </div>
+                    <div class="control">
+                        {{ connect.goback(class="button is-danger") }} 
                     </div>
                 </div>
             </div>

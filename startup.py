@@ -1,4 +1,4 @@
-from flask import Flask, render_template, flash, redirect, url_for, request, session
+from flask import Flask, render_template, request, make_response
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, StringField, BooleanField, \
         SelectField, FileField, HiddenField, SelectMultipleField, RadioField
@@ -22,6 +22,8 @@ class ConnectionForm(FlaskForm):
     url = StringField('URL to Notion Database', validators=[DataRequired(), URL()])
     token = StringField('Notion v2 Token')
     submit = SubmitField('Submit')
+    goback = SubmitField('Go Back')
+    remember = BooleanField("Remember Me")
 
 class RecurType(FlaskForm):
     start_date = DateField("Start Date", validators=[Optional()])
@@ -141,6 +143,16 @@ def make_columns(client, schema):
 def home():
     connect = ConnectionForm()
 
+    #******************  LOAD COOKIES  ******************
+    if not connect.submit.data and "url" in request.cookies:
+        connect.url.data = request.cookies["url"]
+        connect.token.data = request.cookies["token_v2"]
+        connect.connected.data = "True"
+
+    #****************** GO BACK BUTTON ******************
+    if connect.goback.data:
+        return render_template('home.html', connect=connect)
+
     #****************** CONNECTION FORM ******************
     if connect.validate_on_submit() and connect.connected.data == "False":
         #see if what they gave us works
@@ -153,9 +165,19 @@ def home():
             connect.url.errors.append("Couldn't connect to url")
             return render_template('home.html', connect=connect)
 
-        #if we connected properly, give them notion connect
+            
+        #if we connected properly, give them notion form
         columns, recur = make_columns(client, collection.get_schema_properties())
-        return render_template('home.html', connect=connect, recur=recur, columns=columns)
+        response = render_template('home.html', connect=connect, recur=recur, columns=columns)
+
+        #if they requested to save
+        if connect.remember.data:
+            res = make_response(response)
+            res.set_cookie("token_v2", connect.token.data, max_age=60*60*24*60)
+            res.set_cookie("url", connect.url.data, max_age=60*60*24*60)
+            return res
+        
+        return response
 
 
     #******************* NOTION FORM *******************
