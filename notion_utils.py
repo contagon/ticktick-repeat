@@ -1,13 +1,16 @@
-from notion.client import NotionClient
+import os
+from datetime import timedelta
 from decimal import Decimal
-from datetime import datetime, timedelta
+
+from notion.client import NotionClient
+
 
 ##################################################
 ########       CONNECTING TO NOTION       ########
 ##################################################
 def connect_notion(url, token):
     if token == "":
-        token = os.environ.get('BOT_TOKEN')
+        token = os.environ.get("BOT_TOKEN")
     client = NotionClient(token_v2=token)
     view = client.get_collection_view(url)
     return client, view.collection
@@ -17,13 +20,13 @@ def connect_notion(url, token):
 ########        ADDING TO NOTION         ########
 #################################################
 def add_notion(collection, params, recur):
-    #parse through recur data
+    # parse through recur data
     start_date = recur["start_date"]
     end_date = recur["end_date"]
     count = recur["count"]
     types = recur["types"]
     date_options = recur["date_options"]
-    days = ['M', 'Tu', 'W', 'Th', 'F', 'Sat', 'Sun']
+    days = ["M", "Tu", "W", "Th", "F", "Sat", "Sun"]
     days = []
     if recur["M"]:
         days.append(0)
@@ -38,11 +41,11 @@ def add_notion(collection, params, recur):
     if recur["Sat"]:
         days.append(5)
     if recur["Sun"]:
-        days.append(6) 
+        days.append(6)
 
-    #clean out params given
-    params.pop('csrf_token')
-    for k,v in params.items():
+    # clean out params given
+    params.pop("csrf_token")
+    for k, v in params.items():
         if isinstance(v, Decimal):
             params[k] = float(v)
 
@@ -54,17 +57,20 @@ def add_notion(collection, params, recur):
 
     still_going = True
     while still_going:
-        #if that's not a day we're supposed to add, skip (and check if we should stop)
-        if types in ["dates_both", "dates_mix"] and params[date_options].weekday() not in days:
+        # if that's not a day we're supposed to add, skip (and check if we should stop)
+        if (
+            types in ["dates_both", "dates_mix"]
+            and params[date_options].weekday() not in days
+        ):
             params[date_options] += timedelta(days=1)
             if types == "dates_both" and params[date_options] > end_date:
                 still_going = False
             continue
 
-        #add it
+        # add it
         collection.add_row(**params)
 
-        #increment date and count (and check if we should stop)
+        # increment date and count (and check if we should stop)
         if types in ["dates_both", "dates_mix"]:
             params[date_options] += timedelta(days=1)
         if types == "dates_both" and params[date_options] > end_date:

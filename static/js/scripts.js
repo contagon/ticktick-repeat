@@ -1,7 +1,7 @@
 if ( window.history.replaceState ) {
     window.history.replaceState( null, null, window.location.href );
 }
-  
+
 function recur_options() {
     type = document.getElementById("types").value;
     // console.log( type )

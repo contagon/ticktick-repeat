@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title%}Notion Repeat{% endblock %}
-{% block content %}  
+{% block content %}
 
 {% if recur %}
     <script>
@@ -43,14 +43,14 @@
                         {{ connect.token(class="input", placeholder=connect.token.label.text) }}
                     </div>
                     <div class="control">
-                        {{ connect.submit(class="button is-primary") }} 
+                        {{ connect.submit(class="button is-primary") }}
                     </div>
                 </div>
                 {{ connect.remember }}
                 {{ connect.remember.label }}
             </div>
 
-        
+
         <!-- Recur Form -->
         {% if recur %}
             <div class="box">
@@ -139,7 +139,7 @@
                 </div>
             </div>
         {% endif %}
-            
+
         <!-- Notion Columns -->
         {% if columns %}
             <div class="box">
@@ -156,13 +156,13 @@
                                     <div class="control has-icons-left">
                                         {{ field(class="input") }}
                                         <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-at"></span> 
+                                            <span class="mdi mdi-24px mdi-at"></span>
                                         </span>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        
+
                     {% elif field.id == "text" %}
                         <div class="field is-horizontal">
                             <div class="field-label">
@@ -173,7 +173,7 @@
                                     <div class="control has-icons-left">
                                         {{ field(class="input") }}
                                         <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-format-align-left"></span> 
+                                            <span class="mdi mdi-24px mdi-format-align-left"></span>
                                         </span>
                                     </div>
                                 </div>
@@ -195,7 +195,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div> 
+                        </div>
 
                     {% elif field.id == "phone_number" %}
                         <div class="field is-horizontal">
@@ -207,7 +207,7 @@
                                     <div class="control has-icons-left">
                                         {{ field(class="input") }}
                                         <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-phone"></span> 
+                                            <span class="mdi mdi-24px mdi-phone"></span>
                                         </span>
                                     </div>
                                 </div>
@@ -226,12 +226,12 @@
                                             {{ field(class="s2-single", id=field.name) }}
                                         </div>
                                         <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>  
+                                            <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>
                                         </span>
                                     </div>
-                                </div>    
+                                </div>
                             </div>
-                        </div>        
+                        </div>
 
                     {% elif field.id == "title" %}
                         <div class="field is-horizontal">
@@ -243,12 +243,12 @@
                                     <div class="control has-icons-left">
                                         {{ field(class="input") }}
                                         <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-format-font"></span>   
+                                            <span class="mdi mdi-24px mdi-format-font"></span>
                                         </span>
                                     </div>
                                 </div>
                             </div>
-                        </div>         
+                        </div>
 
                     {% elif field.id == "multi_select" %}
                         <div class="field is-horizontal">
@@ -262,13 +262,13 @@
                                             {{ field(class="s2-multiple", id=field.name) }}
                                         </div>
                                         <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-format-list-bulleted"></span>  
+                                            <span class="mdi mdi-24px mdi-format-list-bulleted"></span>
                                         </span>
                                     </div>
-                                </div>    
+                                </div>
                             </div>
                         </div>
-                        
+
                     {% elif field.id == "relation" %}
                         <div class="field is-horizontal">
                             <div class="field-label">
@@ -281,10 +281,10 @@
                                             {{ field(class="s2-multiple", id=field.name) }}
                                         </div>
                                         <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-format-list-bulleted"></span>  
+                                            <span class="mdi mdi-24px mdi-format-list-bulleted"></span>
                                         </span>
                                     </div>
-                                </div>    
+                                </div>
                             </div>
                         </div>
 
@@ -300,12 +300,12 @@
                                             {{ field(class="s2-multiple", id=field.name) }}
                                         </div>
                                         <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-account-group"></span>  
+                                            <span class="mdi mdi-24px mdi-account-group"></span>
                                         </span>
                                     </div>
-                                </div>    
+                                </div>
                             </div>
-                        </div>         
+                        </div>
 
                     {% elif field.id == "number" %}
                         <div class="field is-horizontal">
@@ -354,13 +354,13 @@
                             </div>
                         </div>
                     </div>
-                        
+
                     {% endif %}
                 {% endfor %}
                 <div class="container">
                     <div class="field is-grouped" style="display: block;">
-                        {{ connect.submit(class="button is-primary") }} 
-                        {{ connect.goback(class="button is-danger is-pulled-right") }} 
+                        {{ connect.submit(class="button is-primary") }}
+                        {{ connect.goback(class="button is-danger is-pulled-right") }}
                     </div>
                 </div>
             </div>
