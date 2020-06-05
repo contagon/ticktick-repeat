@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
@@ -19,10 +20,27 @@ def connect_notion(url, token):
 #################################################
 ########        ADDING TO NOTION         ########
 #################################################
+# simple function to combine dates and times when needed
+def clean_datetime(dt):
+    # if time was added, combine it
+    if dt["time"]:
+        return datetime.combine(dt["date"], dt["time"])
+    # if not, return just the date
+    else:
+        return dt["date"]
+
+
+def ensure_datetime(d):
+    """Takes a date or a datetime as input, outputs a datetime."""
+    if isinstance(d, datetime):
+        return d
+    return datetime(d.year, d.month, d.day)
+
+
 def add_notion(collection, params, recur):
     # parse through recur data
-    start_date = recur["start_date"]
-    end_date = recur["end_date"]
+    start_date = clean_datetime(recur["start_date"])
+    end_date = clean_datetime(recur["end_date"])
     count = recur["count"]
     types = recur["types"]
     date_options = recur["date_options"]
@@ -46,8 +64,12 @@ def add_notion(collection, params, recur):
     # clean out params given
     params.pop("csrf_token")
     for k, v in params.items():
+        # make numbers floats
         if isinstance(v, Decimal):
             params[k] = float(v)
+        # combine date and times
+        if isinstance(v, dict):
+            params[k] = clean_datetime(v)
 
     # Set up iterative variables
     if types in ["dates_both", "dates_mix"]:
@@ -63,7 +85,9 @@ def add_notion(collection, params, recur):
             and params[date_options].weekday() not in days
         ):
             params[date_options] += timedelta(days=1)
-            if types == "dates_both" and params[date_options] > end_date:
+            if types == "dates_both" and ensure_datetime(
+                params[date_options]
+            ) > ensure_datetime(end_date):
                 still_going = False
             continue
 
@@ -73,7 +97,9 @@ def add_notion(collection, params, recur):
         # increment date and count (and check if we should stop)
         if types in ["dates_both", "dates_mix"]:
             params[date_options] += timedelta(days=1)
-        if types == "dates_both" and params[date_options] > end_date:
+        if types == "dates_both" and ensure_datetime(
+            params[date_options]
+        ) > ensure_datetime(end_date):
             still_going = False
         if types in ["dates_mix", "number"]:
             ccount += 1

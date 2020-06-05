@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from flask_wtf import FlaskForm
 from wtforms import BooleanField
+from wtforms import FormField
 from wtforms import HiddenField
 from wtforms import SelectField
 from wtforms import SelectMultipleField
@@ -13,6 +14,7 @@ from wtforms.fields.html5 import DecimalField
 from wtforms.fields.html5 import EmailField
 from wtforms.fields.html5 import IntegerField
 from wtforms.fields.html5 import TelField
+from wtforms.fields.html5 import TimeField
 from wtforms.fields.html5 import URLField
 from wtforms.validators import DataRequired
 from wtforms.validators import Email
@@ -39,6 +41,21 @@ class SortedForm(FlaskForm):
         return iter(itervalues(fields))
 
 
+# used to give optional time along with dates
+class MyDateTime(FlaskForm):
+    date = DateField("Date", validators=[Optional()])
+    time = TimeField("Time", validators=[Optional()])
+
+    def validate(self):
+        result = True
+        if not super().validate():
+            result = False
+        if not self.date.data and self.time.data:
+            self.date.errors.append("You can't submit only a time")
+            result = False
+        return result
+
+
 # used for connection page
 class ConnectionForm(FlaskForm):
     connected = HiddenField("Connected")
@@ -52,8 +69,10 @@ class ConnectionForm(FlaskForm):
 # Used for recurring settings. To validate different types of recurring
 # we had to make our own validation
 class RecurType(FlaskForm):
-    start_date = DateField("Start Date", validators=[Optional()])
-    end_date = DateField("End Date", validators=[Optional()])
+    # start_date = DateField("Start Date", validators=[Optional()])
+    # end_date = DateField("End Date", validators=[Optional()])
+    start_date = FormField(MyDateTime, label="Start Date")
+    end_date = FormField(MyDateTime, label="End Date")
     count = IntegerField("Count", validators=[Optional()])
 
     def validate(self):
@@ -61,11 +80,14 @@ class RecurType(FlaskForm):
         if not super().validate():
             result = False
 
-        # make sure our start and day selections are good
+        # make sure starting date is good to go
         if self.types.data in ["dates_mix", "dates_both"]:
-            if self.start_date.data is None:
-                self.start_date.errors.append("Required Field")
+            # make sure there's a starting date
+            if self.start_date.date.data is None:
+                self.start_date.date.erros.append("Required Field")
                 result = False
+
+            # make sure they chose a day
             days = [self.M, self.Tu, self.W, self.Th, self.F, self.Sat, self.Sun]
             if not any([i.data for i in days]):
                 self.M.errors.append("You must choose a day!")
@@ -73,18 +95,23 @@ class RecurType(FlaskForm):
 
         # make sure our end date is good
         if self.types.data == "dates_both":
-            if self.end_date.data is None:
-                self.end_date.errors.append("Required Field")
+            # make sure there is one
+            if self.end_date.date.data is None:
+                self.end_date.date.errors.append("Required Field")
                 result = False
-            elif self.start_date.data is not None:
-                if self.start_date.data >= self.end_date.data:
-                    self.end_date.errors.append(
+            # make sure it's after the starting date
+            elif self.start_date.date.data is not None:
+                if self.start_date.date.data >= self.end_date.date.data:
+                    self.start_date.date.errors.append(
                         "End Date is before or on Starting Date"
                     )
                     result = False
 
         if self.types.data == "number":
-            if self.count.data < 1:
+            if not self.count.data:
+                self.count.errors.append("A Number is Required")
+                result = False
+            elif self.count.data < 1:
                 self.count.errors.append("Enter a number greater than 0")
                 result = False
 
@@ -106,56 +133,62 @@ def make_columns(client, schema):
     for column in schema:
         if column["type"] == "title" or column["type"] == "text":
             fields[column["slug"]] = StringField(
-                column["name"], validators=[], id=column["type"]
+                column["name"], validators=[Optional()], id=column["type"]
             )
         elif column["type"] == "email":
             fields[column["slug"]] = EmailField(
-                column["name"], validators=[Email()], id=column["type"]
+                column["name"], validators=[Optional(), Email()], id=column["type"]
             )
         elif column["type"] == "date":
-            fields[column["slug"]] = DateField(
-                column["name"], validators=[], id=column["type"]
+            fields[column["slug"]] = FormField(
+                MyDateTime, id=column["type"], label=column["name"]
             )
             dates.append((column["slug"], column["name"]))
         elif column["type"] == "url":
             fields[column["slug"]] = URLField(
-                column["name"], validators=[URL()], id=column["type"]
+                column["name"], validators=[Optional(), URL()], id=column["type"]
             )
         elif column["type"] == "person":
             persons = client.current_space.users
             options = [(i.id, i.full_name) for i in persons]
             fields[column["slug"]] = SelectMultipleField(
-                column["name"], validators=[], choices=options, id=column["type"]
+                column["name"],
+                validators=[Optional()],
+                choices=options,
+                id=column["type"],
             )
         elif column["type"] == "text":
             fields[column["slug"]] = StringField(
-                column["name"], validators=[], id=column["type"]
+                column["name"], validators=[Optional()], id=column["type"]
             )
         elif column["type"] == "phone_number":
             fields[column["slug"]] = TelField(
-                column["name"], validators=[], id=column["type"]
+                column["name"], validators=[Optional()], id=column["type"]
             )
         elif column["type"] == "select":
             options = [("", "")] + [(i["value"], i["value"]) for i in column["options"]]
             fields[column["slug"]] = SelectField(
                 column["name"],
-                validators=[],
+                validators=[Optional()],
                 choices=options,
                 default=options[0][0],
                 id=column["type"],
             )
         elif column["type"] == "number":
             fields[column["slug"]] = DecimalField(
-                column["name"], validators=[], id=column["type"]
+                column["name"], validators=[Optional()], id=column["type"]
             )
         elif column["type"] == "checkbox":
             fields[column["slug"]] = BooleanField(
-                column["name"], validators=[], id=column["type"]
+                column["name"], validators=[Optional()], id=column["type"]
             )
         elif column["type"] == "multi_select":
             options = [(i["value"], i["value"]) for i in column["options"]]
             fields[column["slug"]] = SelectMultipleField(
-                column["name"], validators=[], choices=options, id=column["type"]
+                column["name"],
+                validators=[Optional()],
+                choices=options,
+                id=column["type"],
             )
         # elif column['type'] == 'file':
         #     fields[ column['slug'] ] = FileField(column['name'], validators=[])

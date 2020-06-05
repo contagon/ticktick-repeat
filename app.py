@@ -79,7 +79,17 @@ def home():
         client, collection = connect_notion(connect.url.data, connect.token.data)
         columns, recur = make_columns(client, collection.get_schema_properties())
 
-        if connect.validate_on_submit() and recur.validate_on_submit():
+        print(
+            connect.validate_on_submit(),
+            recur.validate_on_submit(),
+            columns.validate_on_submit(),
+            columns.errors,
+        )
+        if (
+            connect.validate_on_submit()
+            and recur.validate_on_submit()
+            and columns.validate_on_submit()
+        ):
             # push it to notion!
             add_notion(collection, columns.data, recur.data)
 

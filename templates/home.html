@@ -5,8 +5,8 @@
 {% if recur %}
     <script>
         window.onload = function() {
-            recur_options();
             date_visibility();
+            recur_options();
         };
         $(document).ready(function() {
             $('.s2-single').select2({width: "100%", closeOnSelect: true});
@@ -65,35 +65,37 @@
                     </div>
                 </div>
                 <div class="columns is-multiline is-centered is-0" style="margin-bottom: -0.75rem;">
-                    <div class="column is-narrow" id="{{ recur.date_options.name }}_div" style="display: block;">
-                        <div class="field">
-                            {{ recur.date_options.label }}
-                            <div class="control is-expanded">
-                                <div class="select is-fullwidth">
-                                    {{ recur.date_options(onchange="date_visibility()") }}
+                    <div class="column is-narrow" id="{{ recur.start_date.name }}" style="display: block;">
+                        <div class="field is-expanded">
+                            {{ recur.start_date.label }}
+                            {{ recur.start_date.hidden_tag() }}
+                            <div class="field has-addons">
+                                <div class="control is-expanded">
+                                    {{ recur.start_date.date(class="input") }}
+                                </div>
+                                <div class="control">
+                                    {{ recur.start_date.time(class="input") }}
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                    <div class="column is-narrow" id="{{ recur.start_date.name }}" style="display: block;">
-                        <div class="field">
-                            {{ recur.start_date.label }}
-                            <div class="control">
-                                {{ recur.start_date(class="input") }}
-                            </div>
                             {% for error in recur.start_date.errors %}
-                                <p class="help is-danger">{{ error }}</p>
+                            <p class="help is-danger">{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
                     <div class="column is-narrow" id="{{ recur.end_date.name }}" style="display: block;">
-                        <div class="field">
+                        <div class="field is-expanded">
                             {{ recur.end_date.label }}
-                            <div class="control">
-                                {{ recur.end_date(class="input") }}
+                            {{ recur.end_date.hidden_tag() }}
+                            <div class="field has-addons">
+                                <div class="control is-expanded">
+                                    {{ recur.end_date.date(class="input") }}
+                                </div>
+                                <div class="control">
+                                    {{ recur.end_date.time(class="input") }}
+                                </div>
                             </div>
                             {% for error in recur.end_date.errors %}
-                                <p class="help is-danger">{{ error }}</p>
+                            <p class="help is-danger">{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
@@ -104,8 +106,18 @@
                                 {{ recur.count(class="input") }}
                             </div>
                             {% for error in recur.count.errors %}
-                                <p class="help is-danger">{{ error }}</p>
+                            <p class="help is-danger">{{ error }}</p>
                             {% endfor %}
+                        </div>
+                    </div>
+                    <div class="column is-narrow" id="{{ recur.date_options.name }}_div" style="display: block;">
+                        <div class="field">
+                            {{ recur.date_options.label }}
+                            <div class="control is-expanded">
+                                <div class="select is-fullwidth">
+                                    {{ recur.date_options(onchange="date_visibility()") }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="column is-narrow">
@@ -326,17 +338,26 @@
 
                     {% elif field.id == "date" %}
                         <div class="field is-horizontal" id="{{ field.name }}_div">
+                            {{ field.hidden_tag() }}
                             <div class="field-label">
                                 {{ field.label }}
                             </div>
                             <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left">
-                                        {{ field(class="input") }}
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-calendar-text"></span>
-                                        </span>
+                                <div class="field is-expanded">
+                                    <div class="field has-addons">
+                                        <div class="control is-expanded has-icons-left">
+                                            {{ field.date(class="input") }}
+                                            <span class="icon is-left">
+                                                <span class="mdi mdi-24px mdi-calendar-text"></span>
+                                            </span>
+                                        </div>
+                                        <div class="control">
+                                            {{ field.time(class="input") }}
+                                        </div>
                                     </div>
+                                    {% for error in field.date.errors %}
+                                        <p class="help is-danger">{{ error }}</p>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
