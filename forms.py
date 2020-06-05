@@ -84,7 +84,7 @@ class RecurType(FlaskForm):
         if self.types.data in ["dates_mix", "dates_both"]:
             # make sure there's a starting date
             if self.start_date.date.data is None:
-                self.start_date.date.erros.append("Required Field")
+                self.start_date.date.errors.append("Required Field")
                 result = False
 
             # make sure they chose a day
@@ -190,14 +190,24 @@ def make_columns(client, schema):
                 choices=options,
                 id=column["type"],
             )
-        # elif column['type'] == 'file':
-        #     fields[ column['slug'] ] = FileField(column['name'], validators=[])
+        elif column["type"] == "file":
+            fields[column["slug"]] = StringField(
+                column["name"],
+                validators=[
+                    Optional(),
+                    URL(message="To upload a file, please use a url to it"),
+                ],
+                id=column["type"],
+            )
         elif column["type"] == "relation":
             relation = client.get_collection(column["collection_id"])
             rows = relation.get_rows()
             options = [(i.id, i.title) for i in rows]
             fields[column["slug"]] = SelectMultipleField(
-                column["name"], validators=[], choices=options, id=column["type"]
+                column["name"],
+                validators=[Optional()],
+                choices=options,
+                id=column["type"],
             )
 
     # apply all attributes of our temporary form

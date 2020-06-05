@@ -30,7 +30,11 @@ def home():
     connect = ConnectionForm()
 
     # ******************  LOAD COOKIES  ******************
-    if not connect.submit.data and "url" in request.cookies:
+    if (
+        not connect.submit.data
+        and "url" in request.cookies
+        and "token_v2" in request.cookies
+    ):
         connect.url.data = request.cookies["url"]
         connect.token.data = request.cookies["token_v2"]
         connect.connected.data = "True"

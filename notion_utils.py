@@ -77,6 +77,7 @@ def add_notion(collection, params, recur):
     if types in ["dates_mix", "number"]:
         ccount = 0
 
+    print(params)
     still_going = True
     while still_going:
         # if that's not a day we're supposed to add, skip (and check if we should stop)
