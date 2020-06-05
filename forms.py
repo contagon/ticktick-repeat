@@ -121,7 +121,7 @@ class RecurType(FlaskForm):
 # lazily add day checkboxes
 days = ["M", "Tu", "W", "Th", "F", "Sat", "Sun"]
 for day in days:
-    setattr(RecurType, day, BooleanField(day))
+    setattr(RecurType, day, BooleanField(day, id="single_day"))
 
 
 # Used to pull notion columns and make form from them
