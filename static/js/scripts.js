@@ -4,8 +4,6 @@ if ( window.history.replaceState ) {
 
 function recur_options() {
     type = document.getElementById("types").value;
-    // console.log( type )
-    // console.log( document.getElementById("date_options_div").style.display )
     if(type == "dates_both"){
         document.getElementById("start_date").style.display = "block";
         document.getElementById("end_date").style.display = "block";
@@ -56,3 +54,10 @@ function toggle(source) {
             checkboxes[i].checked = source.checked;
     }
 }
+
+// Runs all functions for first time, initializes timezone
+window.onload = function() {
+    date_visibility();
+    recur_options();
+    document.getElementById("timezone").value = jstz.determine().name();
+};

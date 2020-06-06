@@ -69,11 +69,10 @@ class ConnectionForm(FlaskForm):
 # Used for recurring settings. To validate different types of recurring
 # we had to make our own validation
 class RecurType(FlaskForm):
-    # start_date = DateField("Start Date", validators=[Optional()])
-    # end_date = DateField("End Date", validators=[Optional()])
     start_date = FormField(MyDateTime, label="Start Date")
     end_date = FormField(MyDateTime, label="End Date")
     count = IntegerField("Count", validators=[Optional()])
+    timezone = HiddenField("Timezone")
 
     def validate(self):
         result = True

@@ -3,21 +3,28 @@
 {% block content %}
 
 {% if recur %}
+    <!-- Used for Icons -->
+    <link href="https://cdn.materialdesignicons.com/5.3.45/css/materialdesignicons.min.css" rel="stylesheet">
+
+    <!-- Used for searchable select/multiselect -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+    <!-- Used to get tzinfo -->
+    <script src=/static/js/jstz.min.js></script>
+
+    <!-- Our own script -->
+    <script src=/static/js/scripts.js></script>
     <script>
-        window.onload = function() {
-            date_visibility();
-            recur_options();
-        };
+        // Sets up searchable selectors
         $(document).ready(function() {
             $('.s2-single').select2({width: "100%", closeOnSelect: true});
-            $('.s2-multiple').select2({width: "100%"});
-            // if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-            //     $(".s2-single").select2('destroy');
-            //     $(".s2-multiple").select2('destroy');
-            // }
-        });
-        </script>
+            $('.s2-multiple').select2({width: "100%", closeOnSelect: false});
+        })
+    </script>
 {% endif %}
+
 <section class="section is-vertical-center">
     <div class="container">
     <form method="POST" action="">
@@ -60,6 +67,7 @@
                     {{ recur.types.label }}
                     <div class="control is-expanded">
                         <div class="select is-fullwidth">
+                            {{ recur.timezone(id="timezone")}}
                             {{ recur.types(onchange="recur_options()") }}
                         </div>
                     </div>

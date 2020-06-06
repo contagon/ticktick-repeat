@@ -1,4 +1,5 @@
 Flask
 Flask-WTF
 WTForms
-notion
+email_validator
+git+https://github.com/contagon/notion-py.git#egg=notion

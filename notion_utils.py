@@ -4,6 +4,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 from notion.client import NotionClient
+from pytz import timezone
 
 
 ##################################################
@@ -21,10 +22,10 @@ def connect_notion(url, token):
 ########        ADDING TO NOTION         ########
 #################################################
 # simple function to combine dates and times when needed
-def clean_datetime(dt):
+def clean_datetime(dt, timezone=None):
     # if time was added, combine it
     if dt["time"]:
-        return datetime.combine(dt["date"], dt["time"].replace(tzinfo=None))
+        return datetime.combine(dt["date"], dt["time"].replace(tzinfo=timezone))
     # if not, return just the date
     else:
         return dt["date"]
@@ -38,10 +39,10 @@ def ensure_datetime(d):
 
 
 def add_notion(collection, params, recur):
-    print(params)
     # parse through recur data
-    start_date = clean_datetime(recur["start_date"])
-    end_date = clean_datetime(recur["end_date"])
+    tz = timezone(recur["timezone"])
+    start_date = clean_datetime(recur["start_date"], tz)
+    end_date = clean_datetime(recur["end_date"], tz)
     count = recur["count"]
     types = recur["types"]
     date_options = recur["date_options"]
@@ -70,7 +71,7 @@ def add_notion(collection, params, recur):
             params[k] = float(v)
         # combine date and times
         if isinstance(v, dict):
-            params[k] = clean_datetime(v)
+            params[k] = clean_datetime(v, tz)
 
     # Set up iterative variables
     if types in ["dates_both", "dates_mix"]:
@@ -78,7 +79,6 @@ def add_notion(collection, params, recur):
     if types in ["dates_mix", "number"]:
         ccount = 0
 
-    print(params)
     still_going = True
     while still_going:
         # if that's not a day we're supposed to add, skip (and check if we should stop)
