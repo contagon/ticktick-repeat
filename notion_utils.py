@@ -24,7 +24,7 @@ def connect_notion(url, token):
 def clean_datetime(dt):
     # if time was added, combine it
     if dt["time"]:
-        return datetime.combine(dt["date"], dt["time"])
+        return datetime.combine(dt["date"], dt["time"].replace(tzinfo=None))
     # if not, return just the date
     else:
         return dt["date"]
@@ -38,6 +38,7 @@ def ensure_datetime(d):
 
 
 def add_notion(collection, params, recur):
+    print(params)
     # parse through recur data
     start_date = clean_datetime(recur["start_date"])
     end_date = clean_datetime(recur["end_date"])
