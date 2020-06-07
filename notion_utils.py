@@ -31,11 +31,11 @@ def clean_datetime(dt, timezone=None):
         return dt["date"]
 
 
-def ensure_datetime(d):
+def ensure_datetime(d, timezone=None):
     """Takes a date or a datetime as input, outputs a datetime."""
     if isinstance(d, datetime):
         return d
-    return datetime(d.year, d.month, d.day)
+    return datetime(d.year, d.month, d.day, tzinfo=timezone)
 
 
 def add_notion(collection, params, recur):
@@ -88,8 +88,8 @@ def add_notion(collection, params, recur):
         ):
             params[date_options] += timedelta(days=1)
             if types == "dates_both" and ensure_datetime(
-                params[date_options]
-            ) > ensure_datetime(end_date):
+                params[date_options], tz
+            ) > ensure_datetime(end_date, tz):
                 still_going = False
             continue
 
@@ -100,8 +100,8 @@ def add_notion(collection, params, recur):
         if types in ["dates_both", "dates_mix"]:
             params[date_options] += timedelta(days=1)
         if types == "dates_both" and ensure_datetime(
-            params[date_options]
-        ) > ensure_datetime(end_date):
+            params[date_options], tz
+        ) > ensure_datetime(end_date, tz):
             still_going = False
         if types in ["dates_mix", "number"]:
             ccount += 1
