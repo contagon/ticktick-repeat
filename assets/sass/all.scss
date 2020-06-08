@@ -19,7 +19,18 @@ $tablet: 550px;
 $input-icon-color: $grey-light;
 $input-border-color: $grey-light;
 
-@import "bulma/bulma.sass";
+// Import all bulma stuff we use
+@import "bulma/sass/utilities/_all.sass";
+@import "bulma/sass/base/_all.sass";
+@import "bulma/sass/elements/box.sass";
+@import "bulma/sass/elements/button.sass";
+@import "bulma/sass/elements/container.sass";
+@import "bulma/sass/elements/icon.sass";
+@import "bulma/sass/elements/table.sass";
+@import "bulma/sass/form/_all.sass";
+@import "bulma/sass/grid/columns.sass";
+@import "bulma/sass/layout/section.sass";
+
 
 // Make small pages center vertically
 body{
@@ -30,6 +41,7 @@ body{
 .is-vertical-center {
     flex-grow: 1;
   }
+
 
 // Tons of ugly stuff to get select2 to look nice
 .select2-container {
