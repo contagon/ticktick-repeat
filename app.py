@@ -25,6 +25,11 @@ app.config.from_object(Config)
 ##################################################
 ########              PAGES               ########
 ##################################################
+@app.route("/faq")
+def faq():
+    return render_template("faq.html")
+
+
 @app.route("/", methods=["GET", "POST"])
 def home():
     connect = ConnectionForm()
