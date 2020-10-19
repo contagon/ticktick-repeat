@@ -3,49 +3,46 @@ from datetime import datetime
 from datetime import timedelta
 from decimal import Decimal
 
-from notion.client import NotionClient
+from ticktick import TickTick
 from pytz import timezone
 
-
+UTC = timezone('utc')
 ##################################################
 ########       CONNECTING TO NOTION       ########
 ##################################################
-def connect_notion(url, token):
-    if token == "":
-        token = os.environ.get("BOT_TOKEN")
-    client = NotionClient(token_v2=token)
-    view = client.get_collection_view(url)
-    return client, view.collection
+def connect_ticktick(username, password):
+    client = TickTick(username, password)
+    client.fetch()
+    return client
 
 
 #################################################
-########        ADDING TO NOTION         ########
+########       ADDING TO TICKTICK        ########
 #################################################
 # simple function to combine dates and times when needed
 def clean_datetime(dt, timezone=None):
     # if time was added, combine it
     if dt["time"]:
-        return datetime.combine(dt["date"], dt["time"].replace(tzinfo=timezone))
+        return False, datetime.combine(dt["date"], dt["time"].replace(tzinfo=timezone))
     # if not, return just the date
+    elif dt['date']:
+        return True, datetime(dt['date'].year, dt['date'].month, dt['date'].day, tzinfo=timezone)
     else:
-        return dt["date"]
+        return True, None
+
+def serialize_datetime(date):
+    string = date.astimezone(UTC).isoformat()
+    string = string[:-6] + ".000" + string[-6:-3] + string[-2:]
+    return string
 
 
-def ensure_datetime(d, timezone=None):
-    """Takes a date or a datetime as input, outputs a datetime."""
-    if isinstance(d, datetime):
-        return d
-    return datetime(d.year, d.month, d.day, tzinfo=timezone)
-
-
-def add_notion(collection, params, recur):
+def add_notion(client, params, recur):
     # parse through recur data
-    tz = timezone(recur["timezone"])
-    start_date = clean_datetime(recur["start_date"], tz)
-    end_date = clean_datetime(recur["end_date"], tz)
+    tz = timezone(client.guess_timezone()) #timezone(recur["timezone"])
+    _, start_date = clean_datetime(recur["start_date"], tz)
+    _, end_date = clean_datetime(recur["end_date"], tz)
     count = recur["count"]
     types = recur["types"]
-    date_options = recur["date_options"]
     days = ["M", "Tu", "W", "Th", "F", "Sat", "Sun"]
     days = []
     if recur["M"]:
@@ -66,16 +63,13 @@ def add_notion(collection, params, recur):
     # clean out params given
     params.pop("csrf_token")
     for k, v in params.items():
-        # make numbers floats
-        if isinstance(v, Decimal):
-            params[k] = float(v)
         # combine date and times
         if isinstance(v, dict):
-            params[k] = clean_datetime(v, tz)
+            isAllDay, params[k] = clean_datetime(v, tz)
 
     # Set up iterative variables
     if types in ["dates_both", "dates_mix"]:
-        params[date_options] = start_date
+        params['dueDate'] = start_date
     if types in ["dates_mix", "number"]:
         ccount = 0
 
@@ -84,24 +78,24 @@ def add_notion(collection, params, recur):
         # if that's not a day we're supposed to add, skip (and check if we should stop)
         if (
             types in ["dates_both", "dates_mix"]
-            and params[date_options].weekday() not in days
+            and params['dueDate'].weekday() not in days
         ):
-            params[date_options] += timedelta(days=1)
-            if types == "dates_both" and ensure_datetime(
-                params[date_options], tz
-            ) > ensure_datetime(end_date, tz):
+            params['dueDate'] += timedelta(days=1)
+            if types == "dates_both" and params['dueDate'] > end_date:
                 still_going = False
             continue
 
         # add it
-        collection.add_row(**params)
+        client.add(params['title'], list_name=params['list'],
+                    extra_kwargs={'priority': params['priority'],
+                                    'tags': params['tags'],
+                                    'dueDate': serialize_datetime(params['dueDate']), 'isAllDay': isAllDay})
+        print(isAllDay, serialize_datetime(params['dueDate']))
 
         # increment date and count (and check if we should stop)
         if types in ["dates_both", "dates_mix"]:
-            params[date_options] += timedelta(days=1)
-        if types == "dates_both" and ensure_datetime(
-            params[date_options], tz
-        ) > ensure_datetime(end_date, tz):
+            params['dueDate'] += timedelta(days=1)
+        if types == "dates_both" and params['dueDate'] > end_date:
             still_going = False
         if types in ["dates_mix", "number"]:
             ccount += 1

@@ -34,20 +34,20 @@
         {% else %}
             <div class="box" style="display: none;">
         {% endif %}
-                <h1 class="title">Repeat Notion</h1>
-                <h2 class="subtitle">Connect to Notion</h2>
+                <h1 class="title">Repeat TickTick</h1>
+                <h2 class="subtitle">Connect to TickTick</h2>
                 <div class="field">
                     <div class="control">
                         {{ connect.hidden_tag() }}
-                        {{ connect.url(class="input", placeholder=connect.url.label.text) }}
+                        {{ connect.username(class="input", placeholder=connect.username.label.text) }}
                     </div>
-                    {% for error in connect.url.errors %}
+                    {% for error in connect.username.errors %}
                         <p class="help is-danger">{{ error }}</p>
                     {% endfor %}
                 </div>
                 <div class="field has-addons">
                     <div class="control is-expanded">
-                        {{ connect.token(class="input", placeholder=connect.token.label.text) }}
+                        {{ connect.password(class="input", placeholder=connect.password.label.text) }}
                     </div>
                     <div class="control">
                         {{ connect.submit(class="button is-primary") }}
@@ -55,23 +55,6 @@
                 </div>
                 {{ connect.remember }}
                 {{ connect.remember.label }}
-
-                <!-- <p class="subtitle is-size-6 has-text-grey">
-                    Don't want to share your token_v2? Simply share your database with notion.recur@gmail.com and leave the field blank.
-                </p>
-                <p class="is-size-6">
-                    Not comfortable with that? Host it locally with our code <a href="https://github.com/contagon/notion-repeat" class="href">here</a>.
-                </p>
-                <p class="is-size-6">
-                    Want to know more about us or need help finding your token_v2? See the <a href="{{ url_for("faq") }}" class="href">FAQ</a>.
-                </p> -->
-                <footer class="footer">
-                    <div class="content has-text-centered has-text-grey mt-2">
-                        <p>
-                            Learn more about login options, finding your token_v2, about us, and how to host yourself in the <a href="{{ url_for("faq") }}" class="href">FAQ</a>.
-                        </p>
-                    </div>
-                </footer>
             </div>
 
 
@@ -135,16 +118,6 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="column is-narrow" id="{{ recur.date_options.name }}_div" style="display: block;">
-                        <div class="field">
-                            {{ recur.date_options.label }}
-                            <div class="control is-expanded">
-                                <div class="select is-fullwidth">
-                                    {{ recur.date_options(onchange="date_visibility()") }}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     <div class="column is-narrow">
                         <table class="table is-narrow" id="recur_days">
                             <thead>
@@ -182,247 +155,96 @@
             <div class="box">
                 <h1 class="title">Notion Columns</h1>
                 <h2 class="subtitle">Fill in your info</h2>
-                {% for field in columns if field.widget.input_type != 'hidden' %}
-                    {% if field.id == "email" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        {{ columns.title.label }}
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control has-icons-left">
+                                {{ columns.title(class="input") }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-format-font"></span>
+                                </span>
                             </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left">
-                                        {{ field(class="input") }}
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-at"></span>
-                                        </span>
-                                    </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        {{ columns.list.label }}
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control has-icons-left is-expanded">
+                                <div class="select is-fullwidth">
+                                    {{ columns.list(class="s2-single", id="List") }}
                                 </div>
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>
+                                </span>
                             </div>
                         </div>
-
-                    {% elif field.id == "text" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left">
-                                        {{ field(class="input") }}
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-format-align-left"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "url" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left">
-                                        {{ field(class="input") }}
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-link-variant"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "phone_number" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left">
-                                        {{ field(class="input") }}
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-phone"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "select" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left is-expanded">
-                                        <div class="select is-fullwidth">
-                                            {{ field(class="s2-single", id=field.name) }}
-                                        </div>
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "title" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left">
-                                        {{ field(class="input") }}
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-format-font"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "multi_select" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left is-expanded">
-                                        <div class="select is-multiple is-fullwidth">
-                                            {{ field(class="s2-multiple", id=field.name) }}
-                                        </div>
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-format-list-bulleted"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "relation" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left is-expanded">
-                                        <div class="select is-multiple is-fullwidth">
-                                            {{ field(class="s2-multiple", id=field.name) }}
-                                        </div>
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-format-list-bulleted"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "person" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left is-expanded">
-                                        <div class="select is-multiple is-fullwidth">
-                                            {{ field(class="s2-multiple", id=field.name) }}
-                                        </div>
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-account-group"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "number" %}
-                        <div class="field is-horizontal">
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field">
-                                    <div class="control has-icons-left">
-                                        {{ field(class="input") }}
-                                        <span class="icon is-left">
-                                            <span class="mdi mdi-24px mdi-pound"></span>
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "file" %}
-                    <div class="field is-horizontal">
-                        <div class="field-label">
-                            {{ field.label }}
-                        </div>
-                        <div class="field-body">
-                            <div class="field">
-                                <div class="control has-icons-left">
-                                    {{ field(class="input") }}
+                    </div>
+                </div>
+                <div class="field is-horizontal" id="{{ columns.dueDate.name }}_div">
+                    {{ columns.dueDate.hidden_tag() }}
+                    <div class="field-label">
+                        {{ columns.dueDate.label }}
+                    </div>
+                    <div class="field-body">
+                        <div class="field is-expanded">
+                            <div class="field has-addons">
+                                <div class="control is-expanded has-icons-left">
+                                    {{ columns.dueDate.date(class="input") }}
                                     <span class="icon is-left">
-                                        <span class="mdi mdi-24px mdi-attachment"></span>
+                                        <span class="mdi mdi-24px mdi-calendar-text"></span>
                                     </span>
                                 </div>
-                                {% for error in field.errors %}
-                                    <p class="help is-danger">{{ error }}</p>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-
-                    {% elif field.id == "date" %}
-                        <div class="field is-horizontal" id="{{ field.name }}_div">
-                            {{ field.hidden_tag() }}
-                            <div class="field-label">
-                                {{ field.label }}
-                            </div>
-                            <div class="field-body">
-                                <div class="field is-expanded">
-                                    <div class="field has-addons">
-                                        <div class="control is-expanded has-icons-left">
-                                            {{ field.date(class="input") }}
-                                            <span class="icon is-left">
-                                                <span class="mdi mdi-24px mdi-calendar-text"></span>
-                                            </span>
-                                        </div>
-                                        <div class="control">
-                                            {{ field.time(class="input") }}
-                                        </div>
-                                    </div>
-                                    {% for error in field.date.errors %}
-                                        <p class="help is-danger">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-
-                    {% elif field.id == "checkbox" %}
-                    <div class="field is-horizontal" id="{{ field.name }}_div">
-                        <div class="field-label">
-                            {{ field.label }}
-                        </div>
-                        <div class="field-body">
-                            <div class="field">
                                 <div class="control">
-                                    {{ field }}
+                                    {{ columns.dueDate.time(class="input") }}
                                 </div>
+                            </div>
+                            {% for error in columns.dueDate.date.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        {{ columns.tags.label }}
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control has-icons-left is-expanded">
+                                <div class="select is-multiple is-fullwidth">
+                                    {{ columns.tags(class="s2-multiple", id=columns.tags.name) }}
+                                </div>
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-format-list-bulleted"></span>
+                                </span>
                             </div>
                         </div>
                     </div>
-
-                    {% endif %}
-                {% endfor %}
+                </div>
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        {{ columns.priority.label }}
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control has-icons-left is-expanded">
+                                <div class="select is-fullwidth">
+                                    {{ columns.priority(class="s2-single", id="List") }}
+                                </div>
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div class="container">
                     <div class="field is-grouped" style="display: block;">
                         {{ connect.submit(class="button is-primary") }}
