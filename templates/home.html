@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title%}Notion Repeat{% endblock %}
+{% block title%}TickTick Repeat{% endblock %}
 {% block content %}
 
 {% if recur %}
@@ -72,7 +72,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="columns is-multiline is-centered is-0" style="margin-bottom: -0.75rem;">
+                <div class="tickform is-multiline is-centered is-0" style="margin-bottom: -0.75rem;">
                     <div class="column is-narrow" id="{{ recur.start_date.name }}" style="display: block;">
                         <div class="field is-expanded">
                             {{ recur.start_date.label }}
@@ -150,19 +150,19 @@
             </div>
         {% endif %}
 
-        <!-- Notion Columns -->
-        {% if columns %}
+        <!-- TickTick Columns -->
+        {% if tickform %}
             <div class="box">
-                <h1 class="title">Notion Columns</h1>
+                <h1 class="title">TickTick Tasks</h1>
                 <h2 class="subtitle">Fill in your info</h2>
                 <div class="field is-horizontal">
                     <div class="field-label">
-                        {{ columns.title.label }}
+                        {{ tickform.title.label }}
                     </div>
                     <div class="field-body">
                         <div class="field">
                             <div class="control has-icons-left">
-                                {{ columns.title(class="input") }}
+                                {{ tickform.title(class="input") }}
                                 <span class="icon is-left">
                                     <span class="mdi mdi-24px mdi-format-font"></span>
                                 </span>
@@ -172,40 +172,40 @@
                 </div>
                 <div class="field is-horizontal">
                     <div class="field-label">
-                        {{ columns.list.label }}
+                        {{ tickform.list.label }}
                     </div>
                     <div class="field-body">
                         <div class="field">
                             <div class="control has-icons-left is-expanded">
                                 <div class="select is-fullwidth">
-                                    {{ columns.list(class="s2-single", id="List") }}
+                                    {{ tickform.list(class="s2-single", id="List") }}
                                 </div>
                                 <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>
+                                    <span class="mdi mdi-24px mdi-menu"></span>
                                 </span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="field is-horizontal" id="{{ columns.dueDate.name }}_div">
-                    {{ columns.dueDate.hidden_tag() }}
+                <div class="field is-horizontal" id="{{ tickform.dueDate.name }}_div">
+                    {{ tickform.dueDate.hidden_tag() }}
                     <div class="field-label">
-                        {{ columns.dueDate.label }}
+                        {{ tickform.dueDate.label }}
                     </div>
                     <div class="field-body">
                         <div class="field is-expanded">
                             <div class="field has-addons">
                                 <div class="control is-expanded has-icons-left">
-                                    {{ columns.dueDate.date(class="input") }}
+                                    {{ tickform.dueDate.date(class="input") }}
                                     <span class="icon is-left">
                                         <span class="mdi mdi-24px mdi-calendar-text"></span>
                                     </span>
                                 </div>
                                 <div class="control">
-                                    {{ columns.dueDate.time(class="input") }}
+                                    {{ tickform.dueDate.time(class="input") }}
                                 </div>
                             </div>
-                            {% for error in columns.dueDate.date.errors %}
+                            {% for error in tickform.dueDate.date.errors %}
                                 <p class="help is-danger">{{ error }}</p>
                             {% endfor %}
                         </div>
@@ -213,16 +213,16 @@
                 </div>
                 <div class="field is-horizontal">
                     <div class="field-label">
-                        {{ columns.tags.label }}
+                        {{ tickform.tags.label }}
                     </div>
                     <div class="field-body">
                         <div class="field">
                             <div class="control has-icons-left is-expanded">
                                 <div class="select is-multiple is-fullwidth">
-                                    {{ columns.tags(class="s2-multiple", id=columns.tags.name) }}
+                                    {{ tickform.tags(class="s2-multiple", id=tickform.tags.name) }}
                                 </div>
                                 <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-format-list-bulleted"></span>
+                                    <span class="mdi mdi-24px mdi-tag-multiple"></span>
                                 </span>
                             </div>
                         </div>
@@ -230,16 +230,16 @@
                 </div>
                 <div class="field is-horizontal">
                     <div class="field-label">
-                        {{ columns.priority.label }}
+                        {{ tickform.priority.label }}
                     </div>
                     <div class="field-body">
                         <div class="field">
                             <div class="control has-icons-left is-expanded">
                                 <div class="select is-fullwidth">
-                                    {{ columns.priority(class="s2-single", id="List") }}
+                                    {{ tickform.priority(class="s2-single", id="List") }}
                                 </div>
                                 <span class="icon is-left">
-                                    <span class="mdi mdi-24px mdi-arrow-down-drop-circle"></span>
+                                    <span class="mdi mdi-24px mdi-exclamation-thick"></span>
                                 </span>
                             </div>
                         </div>

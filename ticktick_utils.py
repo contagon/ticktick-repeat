@@ -8,7 +8,7 @@ from pytz import timezone
 
 UTC = timezone('utc')
 ##################################################
-########       CONNECTING TO NOTION       ########
+########       CONNECTING TO ticktick       ########
 ##################################################
 def connect_ticktick(username, password):
     client = TickTick(username, password)
@@ -36,7 +36,7 @@ def serialize_datetime(date):
     return string
 
 
-def add_notion(client, params, recur):
+def add_ticktick(client, params, recur):
     # parse through recur data
     tz = timezone(client.guess_timezone()) #timezone(recur["timezone"])
     _, start_date = clean_datetime(recur["start_date"], tz)

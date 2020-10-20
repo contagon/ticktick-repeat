@@ -6,10 +6,10 @@ from flask import render_template
 from flask import request
 
 from forms import ConnectionForm
-from forms import make_columns
+from forms import make_tickform
 from forms import RecurForm
-from notion_utils import add_notion
-from notion_utils import connect_ticktick
+from ticktick_utils import add_ticktick
+from ticktick_utils import connect_ticktick
 
 
 ##################################################
@@ -63,11 +63,11 @@ def home():
             connect.username.errors.append("Couldn't login")
             return render_template("home.html", connect=connect)
 
-        # if we connected properly, give them notion form
-        columns = make_columns(client)
+        # if we connected properly, give them ticktick form
+        tickform = make_tickform(client)
         recur = RecurForm()
         response = render_template(
-            "home.html", connect=connect, recur=recur, columns=columns
+            "home.html", connect=connect, recur=recur, tickform=tickform
         )
 
         # if they requested to save
@@ -79,27 +79,27 @@ def home():
 
         return response
 
-    # *************** RECUR & NOTION FORM ***************
+    # *************** RECUR & ticktick FORM ***************
     if connect.connected.data == "True":
-        # pull columns out of notion to make notion connect
+        # pull tickform out of ticktick to make ticktick connect
         client = connect_ticktick(connect.username.data, connect.password.data)
-        columns = make_columns(client)
+        tickform = make_tickform(client)
         recur = RecurForm()
 
         if (
             connect.validate_on_submit()
             and recur.validate_on_submit()
-            and columns.validate_on_submit()
+            and tickform.validate_on_submit()
         ):
-            # push it to notion!
-            add_notion(client, columns.data, recur.data)
+            # push it to ticktick!
+            add_ticktick(client, tickform.data, recur.data)
 
             return render_template(
-                "home.html", connect=connect, recur=recur, columns=columns
+                "home.html", connect=connect, recur=recur, tickform=tickform
             )
 
         return render_template(
-            "home.html", connect=connect, recur=recur, columns=columns
+            "home.html", connect=connect, recur=recur, tickform=tickform
         )
 
     # Just starting or bad input

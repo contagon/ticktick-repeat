@@ -1,5 +1,5 @@
 Flask
 Flask-WTF
 WTForms
-email_validator
-ticktick
+git+https://github.com/contagon/ticktick-python.git#egg=ticktick
+wtforms_components

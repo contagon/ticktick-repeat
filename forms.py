@@ -4,22 +4,18 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField
 from wtforms import FormField
 from wtforms import HiddenField
-from wtforms import SelectField
-from wtforms import SelectMultipleField
+# from wtforms import SelectField
+# from wtforms import SelectMultipleField
 from wtforms import StringField
 from wtforms import SubmitField
-from wtforms.compat import itervalues
 from wtforms.fields.html5 import DateField
-from wtforms.fields.html5 import DecimalField
-from wtforms.fields.html5 import EmailField
 from wtforms.fields.html5 import IntegerField
-from wtforms.fields.html5 import TelField
 from wtforms.fields.html5 import TimeField
-from wtforms.fields.html5 import URLField
 from wtforms.validators import DataRequired
-from wtforms.validators import Email
 from wtforms.validators import Optional
-from wtforms.validators import URL
+from wtforms.widgets import PasswordInput
+from wtforms_components import SelectField
+from wtforms_components import SelectMultipleField
 
 
 # used to give optional time along with dates
@@ -41,7 +37,7 @@ class MyDateTime(FlaskForm):
 class ConnectionForm(FlaskForm):
     connected = HiddenField("Connected")
     username = StringField("Username", validators=[DataRequired()])
-    password = StringField("Password")
+    password = StringField("Password", validators=[DataRequired()], widget=PasswordInput(hide_value=False))
     submit = SubmitField("Submit")
     goback = SubmitField("Go Back")
     remember = BooleanField("Remember Me")
@@ -114,17 +110,32 @@ for day in days:
     setattr(RecurForm, day, BooleanField(day, id="single_day"))
 
 
-# Used to pull notion columns and make form from them
+# Used to pull ticktick tickform and make form from them
 # Also used to finish making recur form
-def make_columns(client):
-    # Put all columns into  a field
+def make_tickform(client):
+    # Put all tickform into  a field
     fields = dict()
     fields['title'] = StringField("Title", validators=[])
-    options = [("", "Inbox")] + [(i['name'], i['name']) for i in client.lists]
+
+    # Lists
+    groups = {item['id']: [item['name']] for item in client.list_groups}
+    others = []
+    for item in client.lists:
+        if item['closed'] != True:
+            try:
+                groups[item['groupId']].append( (item['name'], item['name']) )
+            except:
+                others.append( (item['name'], item['name']) )
+    options = [("", "Inbox")] + others + [(i[0], i[1:]) for i in groups.values()]
     fields['list'] = SelectField("List", choices=options, validators=[Optional()])
+
+    # Due Date
     fields['dueDate'] = FormField(MyDateTime, label="Due Date")
+
+    # Tags
     options = [("", "None")] + [(i['name'], i['name']) for i in client.tags]
     fields['tags'] = SelectMultipleField("Tags", choices=options, validators=[Optional()])
+
     fields['priority'] = SelectField("Priority", choices=[(0, "None"), (1, "Low"), (3, "Medium"), (5, "High")], validators=[Optional()])
 
     # apply all attributes of our temporary form
