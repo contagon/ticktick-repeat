@@ -3,3 +3,4 @@ Flask-WTF
 WTForms
 git+https://github.com/contagon/ticktick-python.git#egg=ticktick
 wtforms_components
+pytz
