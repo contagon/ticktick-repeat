@@ -1,3 +1,4 @@
+/* Bulma Utilities */
 @keyframes spinAround {
   from {
     transform: rotate(0deg);
@@ -82,6 +83,7 @@ fieldset[disabled] .file-name, fieldset[disabled] .select select, .select fields
   cursor: not-allowed;
 }
 
+/* Bulma Base */
 /*! minireset.css v0.0.6 | MIT License | github.com/jgthms/minireset.css */
 html,
 body,
@@ -188,6 +190,7 @@ section {
 body,
 button,
 input,
+optgroup,
 select,
 textarea {
   font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", "Helvetica", "Arial", sans-serif;
@@ -221,7 +224,7 @@ a:hover {
 
 code {
   background-color: whitesmoke;
-  color: #f14668;
+  color: #da1039;
   font-size: 0.875em;
   font-weight: normal;
   padding: 0.25em 0.5em 0.25em;
@@ -1410,7 +1413,7 @@ a.box:active {
   width: auto;
 }
 .container.is-fluid {
-  max-width: none;
+  max-width: none !important;
   padding-left: 32px;
   padding-right: 32px;
   width: 100%;
@@ -1705,6 +1708,7 @@ a.box:active {
   font-size: 0.75rem;
 }
 
+/* Bulma Form */
 .select select, .textarea, .input {
   background-color: white;
   border-color: #b5b5b5;
@@ -1879,7 +1883,9 @@ a.box:active {
 .radio:hover, .checkbox:hover {
   color: #363636;
 }
-[disabled].radio, [disabled].checkbox, fieldset[disabled] .radio, fieldset[disabled] .checkbox {
+[disabled].radio, [disabled].checkbox, fieldset[disabled] .radio, fieldset[disabled] .checkbox,
+.radio input[disabled],
+.checkbox input[disabled] {
   color: #7a7a7a;
   cursor: not-allowed;
 }
@@ -4213,6 +4219,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   padding: 0 !important;
 }
 
+.m-0 {
+  margin: 0 !important;
+}
+
 .mt-0 {
   margin-top: 0 !important;
 }
@@ -4237,6 +4247,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .my-0 {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
+}
+
+.m-1 {
+  margin: 0.25rem !important;
 }
 
 .mt-1 {
@@ -4265,6 +4279,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   margin-bottom: 0.25rem !important;
 }
 
+.m-2 {
+  margin: 0.5rem !important;
+}
+
 .mt-2 {
   margin-top: 0.5rem !important;
 }
@@ -4289,6 +4307,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .my-2 {
   margin-top: 0.5rem !important;
   margin-bottom: 0.5rem !important;
+}
+
+.m-3 {
+  margin: 0.75rem !important;
 }
 
 .mt-3 {
@@ -4317,6 +4339,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   margin-bottom: 0.75rem !important;
 }
 
+.m-4 {
+  margin: 1rem !important;
+}
+
 .mt-4 {
   margin-top: 1rem !important;
 }
@@ -4341,6 +4367,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .my-4 {
   margin-top: 1rem !important;
   margin-bottom: 1rem !important;
+}
+
+.m-5 {
+  margin: 1.5rem !important;
 }
 
 .mt-5 {
@@ -4369,6 +4399,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   margin-bottom: 1.5rem !important;
 }
 
+.m-6 {
+  margin: 3rem !important;
+}
+
 .mt-6 {
   margin-top: 3rem !important;
 }
@@ -4393,6 +4427,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .my-6 {
   margin-top: 3rem !important;
   margin-bottom: 3rem !important;
+}
+
+.p-0 {
+  padding: 0 !important;
 }
 
 .pt-0 {
@@ -4421,6 +4459,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   padding-bottom: 0 !important;
 }
 
+.p-1 {
+  padding: 0.25rem !important;
+}
+
 .pt-1 {
   padding-top: 0.25rem !important;
 }
@@ -4445,6 +4487,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .py-1 {
   padding-top: 0.25rem !important;
   padding-bottom: 0.25rem !important;
+}
+
+.p-2 {
+  padding: 0.5rem !important;
 }
 
 .pt-2 {
@@ -4473,6 +4519,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   padding-bottom: 0.5rem !important;
 }
 
+.p-3 {
+  padding: 0.75rem !important;
+}
+
 .pt-3 {
   padding-top: 0.75rem !important;
 }
@@ -4497,6 +4547,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .py-3 {
   padding-top: 0.75rem !important;
   padding-bottom: 0.75rem !important;
+}
+
+.p-4 {
+  padding: 1rem !important;
 }
 
 .pt-4 {
@@ -4525,6 +4579,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
   padding-bottom: 1rem !important;
 }
 
+.p-5 {
+  padding: 1.5rem !important;
+}
+
 .pt-5 {
   padding-top: 1.5rem !important;
 }
@@ -4549,6 +4607,10 @@ a.has-text-danger-dark:hover, a.has-text-danger-dark:focus {
 .py-5 {
   padding-top: 1.5rem !important;
   padding-bottom: 1.5rem !important;
+}
+
+.p-6 {
+  padding: 3rem !important;
 }
 
 .pt-6 {
