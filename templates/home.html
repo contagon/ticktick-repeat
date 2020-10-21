@@ -6,23 +6,8 @@
     <!-- Used for Icons -->
     <link href="https://cdn.materialdesignicons.com/5.3.45/css/materialdesignicons.min.css" rel="stylesheet">
 
-    <!-- Used for searchable select/multiselect -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-
-    <!-- Used to get tzinfo -->
-    <script src=/static/js/jstz.min.js></script>
-
     <!-- Our own script -->
     <script src=/static/js/scripts.js></script>
-    <script>
-        // Sets up searchable selectors
-        $(document).ready(function() {
-            $('.s2-single').select2({width: "100%", closeOnSelect: true});
-            $('.s2-multiple').select2({width: "100%", closeOnSelect: false});
-        })
-    </script>
 {% endif %}
 
 <section class="section is-vertical-center">
@@ -67,7 +52,6 @@
                     {{ recur.types.label }}
                     <div class="control is-expanded">
                         <div class="select is-fullwidth">
-                            {{ recur.timezone(id="timezone")}}
                             {{ recur.types(onchange="recur_options()") }}
                         </div>
                     </div>
@@ -167,6 +151,9 @@
                                     <span class="mdi mdi-24px mdi-format-font"></span>
                                 </span>
                             </div>
+                            {% for error in tickform.tags.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -178,12 +165,15 @@
                         <div class="field">
                             <div class="control has-icons-left is-expanded">
                                 <div class="select is-fullwidth">
-                                    {{ tickform.list(class="s2-single", id="List") }}
+                                    {{ tickform.list(id="List") }}
                                 </div>
                                 <span class="icon is-left">
                                     <span class="mdi mdi-24px mdi-menu"></span>
                                 </span>
                             </div>
+                            {% for error in tickform.list.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -219,12 +209,15 @@
                         <div class="field">
                             <div class="control has-icons-left is-expanded">
                                 <div class="select is-multiple is-fullwidth">
-                                    {{ tickform.tags(class="s2-multiple", id=tickform.tags.name) }}
+                                    {{ tickform.tags(id=tickform.tags.name) }}
                                 </div>
                                 <span class="icon is-left">
                                     <span class="mdi mdi-24px mdi-tag-multiple"></span>
                                 </span>
                             </div>
+                            {% for error in tickform.tags.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -236,12 +229,15 @@
                         <div class="field">
                             <div class="control has-icons-left is-expanded">
                                 <div class="select is-fullwidth">
-                                    {{ tickform.priority(class="s2-single", id="List") }}
+                                    {{ tickform.priority(id="List") }}
                                 </div>
                                 <span class="icon is-left">
                                     <span class="mdi mdi-24px mdi-exclamation-thick"></span>
                                 </span>
                             </div>
+                            {% for error in tickform.priority.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>

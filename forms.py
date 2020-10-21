@@ -4,8 +4,8 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField
 from wtforms import FormField
 from wtforms import HiddenField
-# from wtforms import SelectField
-# from wtforms import SelectMultipleField
+from wtforms import SelectField
+from wtforms import SelectMultipleField
 from wtforms import StringField
 from wtforms import SubmitField
 from wtforms.fields.html5 import DateField
@@ -14,8 +14,7 @@ from wtforms.fields.html5 import TimeField
 from wtforms.validators import DataRequired
 from wtforms.validators import Optional
 from wtforms.widgets import PasswordInput
-from wtforms_components import SelectField
-from wtforms_components import SelectMultipleField
+from wtforms_components import SelectField as GroupedSelectField
 
 
 # used to give optional time along with dates
@@ -115,7 +114,7 @@ for day in days:
 def make_tickform(client):
     # Put all tickform into  a field
     fields = dict()
-    fields['title'] = StringField("Title", validators=[])
+    fields['title'] = StringField("Title", validators=[Optional()])
 
     # Lists
     groups = {item['id']: [item['name']] for item in client.list_groups}
@@ -127,13 +126,13 @@ def make_tickform(client):
             except:
                 others.append( (item['name'], item['name']) )
     options = [("", "Inbox")] + others + [(i[0], i[1:]) for i in groups.values()]
-    fields['list'] = SelectField("List", choices=options, validators=[Optional()])
+    fields['list'] = GroupedSelectField("List", choices=options, validators=[Optional()])
 
     # Due Date
     fields['dueDate'] = FormField(MyDateTime, label="Due Date")
 
     # Tags
-    options = [("", "None")] + [(i['name'], i['name']) for i in client.tags]
+    options = [(i['name'], i['label']) for i in client.tags]
     fields['tags'] = SelectMultipleField("Tags", choices=options, validators=[Optional()])
 
     fields['priority'] = SelectField("Priority", choices=[(0, "None"), (1, "Low"), (3, "Medium"), (5, "High")], validators=[Optional()])

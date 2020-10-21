@@ -31,9 +31,12 @@ def clean_datetime(dt, timezone=None):
         return True, None
 
 def serialize_datetime(date):
-    string = date.astimezone(UTC).isoformat()
-    string = string[:-6] + ".000" + string[-6:-3] + string[-2:]
-    return string
+    if date is None:
+        return None
+    else:
+        string = date.astimezone(UTC).isoformat()
+        string = string[:-6] + ".000" + string[-6:-3] + string[-2:]
+        return string
 
 
 def add_ticktick(client, params, recur):
@@ -60,12 +63,8 @@ def add_ticktick(client, params, recur):
     if recur["Sun"]:
         days.append(6)
 
-    # clean out params given
-    params.pop("csrf_token")
-    for k, v in params.items():
-        # combine date and times
-        if isinstance(v, dict):
-            isAllDay, params[k] = clean_datetime(v, tz)
+    # clean out due date
+    isAllDay, params['dueDate'] = clean_datetime(params['dueDate'], tz)
 
     # Set up iterative variables
     if types in ["dates_both", "dates_mix"]:
@@ -90,7 +89,6 @@ def add_ticktick(client, params, recur):
                     extra_kwargs={'priority': params['priority'],
                                     'tags': params['tags'],
                                     'dueDate': serialize_datetime(params['dueDate']), 'isAllDay': isAllDay})
-        print(isAllDay, serialize_datetime(params['dueDate']))
 
         # increment date and count (and check if we should stop)
         if types in ["dates_both", "dates_mix"]:
