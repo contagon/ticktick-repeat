@@ -48,39 +48,61 @@
             <div class="box">
                 <h1 class="title">Recurring Settings</h1>
                 <h2 class="subtitle">Choose how to iteratively add things</h2>
-                <div class="field">
-                    {{ recur.types.label }}
-                    <div class="control is-expanded">
-                        <div class="select is-fullwidth">
-                            {{ recur.types(onchange="recur_options()") }}
+                <div class="field is-horizontal">
+                    <div class="field-label">
+                        {{ recur.types.label }}
+                    </div>
+                    <div class="field-body">
+                        <div class="field">
+                            <div class="control has-icons-left">
+                                {{ recur.types(class="input", onchange="recur_options()") }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-repeat"></span>
+                                </span>
+                            </div>
+                            {% for error in recur.types.errors %}
+                                <p class="help is-danger">{{ error }}</p>
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
-                <div class="tickform is-multiline is-centered is-0" style="margin-bottom: -0.75rem;">
-                    <div class="column is-narrow" id="{{ recur.start_date.name }}" style="display: block;">
+                <div class="field is-horizontal" id="{{ recur.start_date.name }}">
+                    {{ recur.start_date.hidden_tag() }}
+                    <div class="field-label">
+                        {{ recur.start_date.label }}
+                    </div>
+                    <div class="field-body">
                         <div class="field is-expanded">
-                            {{ recur.start_date.label }}
-                            {{ recur.start_date.hidden_tag() }}
                             <div class="field has-addons">
-                                <div class="control is-expanded">
+                                <div class="control is-expanded has-icons-left">
                                     {{ recur.start_date.date(class="input") }}
+                                    <span class="icon is-left">
+                                        <span class="mdi mdi-24px mdi-calendar-text"></span>
+                                    </span>
                                 </div>
                                 <div class="control">
                                     {{ recur.start_date.time(class="input") }}
                                 </div>
                             </div>
                             {% for error in recur.start_date.date.errors %}
-                            <p class="help is-danger">{{ error }}</p>
+                                <p class="help is-danger">{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="column is-narrow" id="{{ recur.end_date.name }}" style="display: block;">
+                </div>
+                <div class="field is-horizontal" id="{{ recur.end_date.name }}">
+                    {{ recur.end_date.hidden_tag() }}
+                    <div class="field-label">
+                        {{ recur.end_date.label }}
+                    </div>
+                    <div class="field-body">
                         <div class="field is-expanded">
-                            {{ recur.end_date.label }}
-                            {{ recur.end_date.hidden_tag() }}
                             <div class="field has-addons">
-                                <div class="control is-expanded">
+                                <div class="control is-expanded has-icons-left">
                                     {{ recur.end_date.date(class="input") }}
+                                    <span class="icon is-left">
+                                        <span class="mdi mdi-24px mdi-calendar-text"></span>
+                                    </span>
                                 </div>
                                 <div class="control">
                                     {{ recur.end_date.time(class="input") }}
@@ -91,19 +113,28 @@
                             {% endfor %}
                         </div>
                     </div>
-                    <div class="column is-narrow" id="{{ recur.count.name }}" style="display: block;">
+                </div>
+                <div class="field is-horizontal" id="{{ recur.count.name }}">
+                    <div class="field-label">
+                        {{ recur.count.label }}
+                    </div>
+                    <div class="field-body">
                         <div class="field">
-                            {{ recur.count.label }}
-                            <div class="control">
-                                {{ recur.count(class="input") }}
+                            <div class="control has-icons-left">
+                                {{ recur.count(class="input", onchange="recur_options()") }}
+                                <span class="icon is-left">
+                                    <span class="mdi mdi-24px mdi-pound"></span>
+                                </span>
                             </div>
                             {% for error in recur.count.errors %}
                                 <p class="help is-danger">{{ error }}</p>
                             {% endfor %}
                         </div>
                     </div>
+                </div>
+                <div class="columns is-centered" id="recur_days">
                     <div class="column is-narrow">
-                        <table class="table is-narrow" id="recur_days">
+                        <table class="table is-narrow">
                             <thead>
                                 <tr>
                                     <th>Sun</th>

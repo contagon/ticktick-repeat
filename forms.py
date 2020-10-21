@@ -51,7 +51,7 @@ class RecurForm(FlaskForm):
     timezone = HiddenField("Timezone")
 
     types = SelectField(
-        "Select Recurring Type",
+        "Recur Type",
         choices=[
             ("dates_both", "Start and End Date"),
             ("dates_mix", "Start Date and Number"),
