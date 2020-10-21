@@ -7,21 +7,21 @@ function recur_options() {
     if(type == "dates_both"){
         document.getElementById("start_date").style.removeProperty("display");
         document.getElementById("end_date").style.removeProperty("display");
-        document.getElementById("dueDate_div").style.display = "none";
+        document.getElementById("dueDate").style.display = "none";
         document.getElementById("recur_days").style.removeProperty("display");
         document.getElementById("count").style.display = "none";
     }
     else if(type == "dates_mix"){
         document.getElementById("start_date").style.removeProperty("display");
         document.getElementById("end_date").style.display = "none";
-        document.getElementById("dueDate_div").style.display = "none";
+        document.getElementById("dueDate").style.display = "none";
         document.getElementById("recur_days").style.removeProperty("display");
         document.getElementById("count").style.removeProperty("display");
     }
     else if(type == "number"){
         document.getElementById("start_date").style.display = "none";
         document.getElementById("end_date").style.display = "none";
-        document.getElementById("dueDate_div").style.removeProperty("display");
+        document.getElementById("dueDate").style.removeProperty("display");
         document.getElementById("recur_days").style.display = "none";
         document.getElementById("count").style.removeProperty("display");
     }

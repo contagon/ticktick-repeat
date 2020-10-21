@@ -92,8 +92,8 @@ class RecurForm(FlaskForm):
                     )
                     result = False
 
-        if self.types.data == "number":
-            if not self.count.data:
+        if self.types.data in ["dates_mix", "number"]:
+            if self.count.data is None:
                 self.count.errors.append("A Number is Required")
                 result = False
             elif self.count.data < 1:
